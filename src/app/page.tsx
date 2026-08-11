@@ -2041,3 +2041,442 @@ function ProfileView({ user, partner, onUpdate, referrals, achievements, fraudAl
   );
 }
       
+// ============================================
+// 14. LOGIN MODAL
+// ============================================
+
+function LoginModal({ isOpen, onClose, onLogin, onSwitchToRegister, loading, error, email, setEmail, password, setPassword }: any) {
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onLogin(email, password);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-navy-800 rounded-2xl p-8 max-w-md w-full animate-scaleIn">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-navy-800 dark:text-white">Welcome Back</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-navy-700 rounded-lg transition">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white dark:bg-navy-700 text-navy-800 dark:text-white"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white dark:bg-navy-700 text-navy-800 dark:text-white"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="text-red-600 text-sm p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full p-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition disabled:opacity-50"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account?{' '}
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="text-teal-600 hover:text-teal-700 font-medium"
+            >
+              Register
+            </button>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// 15. REGISTER MODAL
+// ============================================
+
+function RegisterModal({ isOpen, onClose, onRegister, onSwitchToLogin, loading, error, email, setEmail, password, setPassword, name, setName, mobile, setMobile }: any) {
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onRegister(email, password, name, mobile);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-navy-800 rounded-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto animate-scaleIn">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-navy-800 dark:text-white">Join Mithaas Express</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-navy-700 rounded-lg transition">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white dark:bg-navy-700 text-navy-800 dark:text-white"
+              placeholder="Your full name"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white dark:bg-navy-700 text-navy-800 dark:text-white"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mobile Number</label>
+            <input
+              type="tel"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white dark:bg-navy-700 text-navy-800 dark:text-white"
+              placeholder="10-digit mobile number"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 border border-gray-300 dark:border-navy-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white dark:bg-navy-700 text-navy-800 dark:text-white"
+              placeholder="Create a password (min 6 characters)"
+              required
+              minLength={6}
+            />
+          </div>
+
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="font-medium">Onboarding Fee: ₹1,899</p>
+            <p>₹10 upfront • ₹1,889 from weekly earnings</p>
+          </div>
+
+          {error && (
+            <div className="text-red-600 text-sm p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full p-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition disabled:opacity-50"
+          >
+            {loading ? "Creating Account..." : "Register Now"}
+          </button>
+
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            Already have an account?{' '}
+            <button
+              type="button"
+              onClick={onSwitchToLogin}
+              className="text-teal-600 hover:text-teal-700 font-medium"
+            >
+              Login
+            </button>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// 16. ORDER DETAILS MODAL
+// ============================================
+
+function OrderDetailsModal({
+  order,
+  onClose,
+  onAccept,
+  onPickup,
+  onDeliver,
+  onUploadProof,
+  deliveryProof,
+  setDeliveryProof,
+  deliveryProofPreview,
+  setDeliveryProofPreview,
+}: any) {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setDeliveryProof(file);
+      setDeliveryProofPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleDeliverWithProof = async () => {
+    if (deliveryProof) {
+      await onUploadProof(order.id, deliveryProof);
+      onClose();
+    } else {
+      await onDeliver(order.id);
+      onClose();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scaleIn">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-navy-800 dark:text-white">Order Details</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-navy-700 rounded-lg transition">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Order Number</p>
+              <p className="font-semibold">{order.orderNumber}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                order.status === "delivered" ? "bg-green-100 text-green-700" :
+                order.status === "assigned" ? "bg-yellow-100 text-yellow-700" :
+                "bg-blue-100 text-blue-700"
+              }`}>
+                {order.status.replace('_', ' ').toUpperCase()}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Customer</p>
+            <p className="font-semibold">{order.customerName}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">📱 {order.customerPhone}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Vendor</p>
+            <p className="font-semibold">{order.vendorName}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{order.vendorAddress}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Product</p>
+            <p>{order.productName} x{order.quantity}</p>
+            <p className="font-semibold">₹{order.totalAmount}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Delivery Address</p>
+            <p className="text-sm">{order.customerAddress}</p>
+            {order.customerNotes && (
+              <p className="text-sm text-orange-600 mt-1">📝 Note: {order.customerNotes}</p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4 text-sm">
+            <span>📍 {order.distance.toFixed(1)} km</span>
+            <span>💰 ₹{order.estimatedEarning || (order.distance * 6 + 12)}</span>
+          </div>
+
+          {/* Delivery Proof Upload */}
+          {(order.status === "picked_up" || order.status === "out_for_delivery") && (
+            <div className="border-t border-gray-200 dark:border-navy-700 pt-4">
+              <p className="font-semibold mb-2">Delivery Proof</p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full p-2 border border-gray-300 dark:border-navy-600 rounded-lg"
+              />
+              {deliveryProofPreview && (
+                <img src={deliveryProofPreview} alt="Proof" className="mt-2 max-h-40 rounded-lg" />
+              )}
+              <button
+                onClick={handleDeliverWithProof}
+                className="mt-3 w-full p-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+              >
+                Confirm Delivery
+              </button>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 mt-4">
+            {order.status === "assigned" && (
+              <button
+                onClick={() => { onAccept(order.id); onClose(); }}
+                className="flex-1 p-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition"
+              >
+                Accept Order
+              </button>
+            )}
+
+            {order.status === "accepted" && (
+              <button
+                onClick={() => { onPickup(order.id); onClose(); }}
+                className="flex-1 p-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+              >
+                Mark as Picked Up
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// 17. BOTTOM NAVIGATION
+// ============================================
+
+function BottomNavigation({ activeTab, setActiveTab, user, notifications }: any) {
+  const unreadCount = notifications?.filter((n: AppNotification) => !n.read).length || 0;
+
+  const tabs = [
+    { id: "Home", icon: Home, label: "Home" },
+    { id: "Orders", icon: Package, label: "Orders" },
+    { id: "Shifts", icon: Clock, label: "Shifts" },
+    { id: "Earnings", icon: Wallet, label: "Earnings" },
+    { id: "Profile", icon: User, label: "Profile" },
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-navy-800 border-t border-gray-200 dark:border-navy-700 md:hidden">
+      <div className="flex items-center justify-around h-16">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center justify-center flex-1 h-full relative ${
+                isActive ? "text-teal-600 dark:text-teal-400" : "text-gray-500 dark:text-gray-400"
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-xs mt-1">{tab.label}</span>
+              {tab.id === "Orders" && unreadCount > 0 && (
+                <span className="absolute top-1 right-1/3 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+              {isActive && (
+                <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-teal-600 rounded-full" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+// ============================================
+// 18. ADMIN PANEL (Simplified)
+// ============================================
+
+function AdminPanel({ partners, orders, complaints, fraudAlerts }: any) {
+  const [adminTab, setAdminTab] = useState("partners");
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="flex items-center gap-4 mb-6">
+        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">Admin Panel</h1>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setAdminTab("partners")}
+            className={`px-4 py-2 rounded-lg ${
+              adminTab === "partners" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700"
+            }`}
+          >
+            Partners
+          </button>
+          <button
+            onClick={() => setAdminTab("orders")}
+            className={`px-4 py-2 rounded-lg ${
+              adminTab === "orders" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700"
+            }`}
+          >
+            Orders
+          </button>
+          <button
+            onClick={() => setAdminTab("complaints")}
+            className={`px-4 py-2 rounded-lg ${
+              adminTab === "complaints" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700"
+            }`}
+          >
+            Complaints
+          </button>
+        </div>
+      </div>
+
+      {adminTab === "partners" && (
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center gap-4 mb-4">
+            <Search className="w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search partners by name or phone..."
+              className="flex-1 p-2 border border-gray-300 dark:border-navy-600 rounded-lg"
+            />
+          </div>
+          <p className="text-gray-500 dark:text-gray-400">No partners registered yet.</p>
+        </div>
+      )}
+
+      {adminTab === "orders" && (
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+          <p className="text-gray-500 dark:text-gray-400">No orders in the system yet.</p>
+        </div>
+      )}
+
+      {adminTab === "complaints" && (
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+          <p className="text-gray-500 dark:text-gray-400">No complaints reported.</p>
+        </div>
+      )}
+    </div>
+  );
+}
