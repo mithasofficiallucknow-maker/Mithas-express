@@ -139,7 +139,7 @@ const storage: FirebaseStorage = getStorage(app);
 // ============================================
 
 // User Types
-interface DeliveryPartner {
+interface AppUser {
   uid: string;
   name: string;
   email: string;
@@ -337,7 +337,7 @@ function useAuth() {
 export default function Home() {
   // --- AUTH STATE ---
   const [user, setUser] = useState<User | null>(null);
-  const [partner, setPartner] = useState<DeliveryPartner | null>(null);
+  const [partner, setPartner] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   // --- UI STATE ---
@@ -474,7 +474,7 @@ export default function Home() {
       };
 
       await setDoc(doc(db, "partners", user.uid), partnerData);
-      setPartner(partnerData as DeliveryPartner);
+      setPartner(partnerData as AppUser);
       setIsRegisterOpen(false);
       setActiveTab("Home");
     } catch (error: any) {
@@ -506,7 +506,7 @@ export default function Home() {
         try {
           const partnerDoc = await getDoc(doc(db, "partners", user.uid));
           if (partnerDoc.exists()) {
-            setPartner(partnerDoc.data() as DeliveryPartner);
+          setPartner(partnerDoc.data() as AppUser);
           }
         } catch (error) {
           console.error("Error fetching partner:", error);
@@ -733,9 +733,9 @@ export default function Home() {
     logout,
     resetPassword,
     updatePartner: async (data) => {
-      if (!user) return;
-      await updateDoc(doc(db, "partners", user.uid), data);
-      setPartner((prev) => prev ? { ...prev, ...data } : null);
+  if (!user) return;
+  await updateDoc(doc(db, "partners", user.uid), data);
+  setPartner((prev) => prev ? { ...prev, ...data } : null);
     },
   };
 
@@ -744,22 +744,22 @@ export default function Home() {
       <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
         <div className="relative min-h-screen pb-24 md:pb-0 bg-[#F8FAFC] dark:bg-navy-900 text-[#0F172A] dark:text-white transition-colors duration-300">
           {/* HEADER */}
-          <Header
-            user={user}
-            partner={partner}
-            onOpenLogin={() => setIsLoginOpen(true)}
-            isMobileMenuOpen={isMobileMenuOpen}
-            setIsMobileMenuOpen={setIsMobileMenuOpen}
-            notifications={notifications}
-            showNotifications={showNotifications}
-            setShowNotifications={setShowNotifications}
-            onMarkNotificationRead={handleMarkNotificationRead}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-            language={language}
-            setLanguage={setLanguage}
-            onLogout={logout}
-          />
+          function Header({
+  user,
+  partner,
+  onOpenLogin,
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
+  notifications,
+  showNotifications,
+  setShowNotifications,
+  onMarkNotificationRead,
+  darkMode,
+  setDarkMode,
+  language,
+  setLanguage,
+  onLogout,
+}: any) {
 
           {/* MAIN CONTENT */}
           <main className="flex-1">
@@ -876,11 +876,8 @@ export default function Home() {
 
           {/* BOTTOM NAVIGATION */}
           {user && (
-            <BottomNavigation
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              user={user}
-              notifications={notifications}
+            function BottomNavigation({ activeTab, setActiveTab, user, notifications }: any) { 
+              
             />
           )}
 
