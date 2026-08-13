@@ -739,27 +739,28 @@ export default function Home() {
     },
   };
 
-  return (
+return (
     <AuthContext.Provider value={authValue}>
       <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
         <div className="relative min-h-screen pb-24 md:pb-0 bg-[#F8FAFC] dark:bg-navy-900 text-[#0F172A] dark:text-white transition-colors duration-300">
           {/* HEADER */}
-          function Header({
-  user,
-  partner,
-  onOpenLogin,
-  isMobileMenuOpen,
-  setIsMobileMenuOpen,
-  notifications,
-  showNotifications,
-  setShowNotifications,
-  onMarkNotificationRead,
-  darkMode,
-  setDarkMode,
-  language,
-  setLanguage,
-  onLogout,
-}: any) {
+          <Header
+            user={user}
+            partner={partner}
+            onOpenLogin={() => setIsLoginOpen(true)}
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
+            notifications={notifications}
+            showNotifications={showNotifications}
+            setShowNotifications={setShowNotifications}
+            onMarkNotificationRead={handleMarkNotificationRead}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            language={language}
+            setLanguage={setLanguage}
+            onLogout={logout}
+          />
+
 
           {/* MAIN CONTENT */}
           <main className="flex-1">
@@ -874,12 +875,16 @@ export default function Home() {
             )}
           </main>
 
-          {/* BOTTOM NAVIGATION */}
+        {/* BOTTOM NAVIGATION */}
           {user && (
-            function BottomNavigation({ activeTab, setActiveTab, user, notifications }: any) { 
-              
+            <BottomNavigation
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              user={user}
+              notifications={notifications}
             />
           )}
+
 
           {/* MODALS */}
           {isLoginOpen && (
