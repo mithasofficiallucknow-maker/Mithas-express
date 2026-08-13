@@ -829,7 +829,13 @@ return (
                       setShowOrderDetails(true);
                     }}
                   />
-                )}
+                {order.customerNotes && (
+  <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+    <p className="text-sm text-yellow-800 dark:text-yellow-300">
+      📝 Customer Note: {order.customerNotes}
+    </p>
+  </div>
+)}
 
                 {activeTab === "Shifts" && (
                   <ShiftsView
@@ -840,14 +846,28 @@ return (
                     user={user}
                   />
                 )}
-
+                
                 {activeTab === "Earnings" && (
-                  <EarningsView
-                    earnings={earnings}
-                    orders={orders}
-                    partner={partner}
-                  />
-                )}
+  <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <h1 className="text-2xl md:text-3xl font-bold text-navy-800 dark:text-white">Earnings</h1>
+    <EarningsView earnings={earnings} orders={orders} partner={partner} />
+    
+    {/* New Components Added Here */}
+    <OnboardingFeeView partner={partner} onUpdate={async (data) => {
+      if (!user) return;
+      await updateDoc(doc(db, "partners", user.uid), data);
+      setPartner((prev) => prev ? { ...prev, ...data } : null);
+    }} />
+    
+    <WalletView earnings={earnings} partner={partner} orders={orders} />
+    
+    <CODLimitView orders={orders} />
+    
+    <ReferralView partner={partner} referrals={referrals} />
+    
+    <DeliveryHistoryView orders={orders} />
+  </div>
+)}
 
                 {activeTab === "Profile" && (
                   <ProfileView
@@ -1866,6 +1886,444 @@ function EarningsView({ earnings, orders, partner }: any) {
     </div>
   );
 }
+
+// Add after EarningsView component
+function OnboardingFeeView({ partner, onUpdate }: any) {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+
+  const handlePayUpfront = async () => {
+    setPaymentLoading(true);
+    try {
+      // Simulate Razorpay payment - will be replaced with actual Razorpay integration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const updatedFee = {
+        ...partner.onboardingFee,
+        paid: 10,
+        remaining: 1889,
+        recovered: 0,
+        history: [
+          {
+            date: serverTimestamp(),
+            amount: 10,
+            week: new Date().toISOString().slice(0, 10),
+            remaining: 1889
+          },
+          ...(partner.onboardingFee.history || [])
+        ]
+      };
+      
+      await onUpdate({ onboardingFee: updatedFee });
+      setShowPaymentModal(false);
+    } catch (error) {
+      console.error("Payment failed:", error);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  if (!partner?.onboardingFee) return null;
+
+  const { total, paid, remaining, recovered, history } = partner.onboardingFee;
+  const progress = ((paid + recovered) / total) * 100;
+
+  return (
+    <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+          Onboarding Fee Status
+        </h2>
+        {paid === 0 && (
+          <button
+            onClick={() => setShowPaymentModal(true)}
+            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+          >
+            Pay ₹10 Now
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Total Fee</p>
+            <p className="text-xl font-bold text-navy-800 dark:text-white">₹{total}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Paid Upfront</p>
+            <p className="text-xl font-bold text-green-600">₹{paid}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Recovered from Earnings</p>
+            <p className="text-xl font-bold text-blue-600">₹{recovered}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Remaining</p>
+            <p className="text-xl font-bold text-orange-600">₹{remaining}</p>
+          </div>
+        </div>
+
+        <div className="w-full bg-gray-200 dark:bg-navy-700 rounded-full h-3">
+          <div
+            className="bg-gradient-to-r from-teal-500 to-green-500 rounded-full h-3 transition-all duration-500"
+            style={{ width: `${Math.min(progress, 100)}%` }}
+          />
+        </div>
+
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          {progress < 100 
+            ? `${((total - remaining) / total * 100).toFixed(1)}% completed`
+            : '✅ Fully paid!'}
+        </p>
+
+        {history && history.length > 0 && (
+          <div className="mt-4">
+            <h3 className="font-medium text-navy-800 dark:text-white mb-2">Deduction History</h3>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {history.map((entry: any, index: number) => (
+                <div key={index} className="flex justify-between text-sm p-2 bg-gray-50 dark:bg-navy-700 rounded-lg">
+                  <span>{entry.week || new Date(entry.date?.toDate()).toLocaleDateString()}</span>
+                  <span className="text-red-600">-₹{entry.amount}</span>
+                  <span className="text-gray-500">Remaining: ₹{entry.remaining}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-navy-800 dark:text-white mb-4">
+              Pay Onboarding Fee
+            </h3>
+            <div className="space-y-4">
+              <div className="bg-gray-50 dark:bg-navy-700 p-4 rounded-lg">
+                <p className="text-sm text-gray-500">Amount</p>
+                <p className="text-2xl font-bold text-navy-800 dark:text-white">₹10</p>
+                <p className="text-xs text-gray-400 mt-1">Remaining ₹1,889 will be deducted from weekly earnings</p>
+              </div>
+              <button
+                onClick={handlePayUpfront}
+                disabled={paymentLoading}
+                className="w-full p-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition disabled:opacity-50"
+              >
+                {paymentLoading ? "Processing..." : "Pay ₹10"}
+              </button>
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="w-full p-3 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg font-semibold hover:bg-gray-300 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+        }
+
+// Add after OnboardingFeeView
+function WalletView({ earnings, partner, orders }: any) {
+  const totalEarnings = earnings.total || 0;
+  const deductions = partner?.onboardingFee?.recovered || 0;
+  const netBalance = totalEarnings - deductions;
+
+  return (
+    <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+          Wallet
+        </h2>
+        <span className="text-xs text-gray-500">View Only</span>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-br from-teal-500 to-teal-700 rounded-xl p-4 text-white">
+          <p className="text-sm opacity-80">Available Balance</p>
+          <p className="text-2xl font-bold">₹{netBalance.toFixed(2)}</p>
+        </div>
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Total Earned</p>
+          <p className="text-xl font-bold text-navy-800 dark:text-white">₹{totalEarnings.toFixed(2)}</p>
+        </div>
+        <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Total Deliveries</p>
+          <p className="text-xl font-bold text-navy-800 dark:text-white">{orders?.filter((o: any) => o.status === 'delivered').length || 0}</p>
+        </div>
+        <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Deductions</p>
+          <p className="text-xl font-bold text-red-600">₹{deductions.toFixed(2)}</p>
+        </div>
+      </div>
+
+      <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+        <p className="text-sm text-yellow-800 dark:text-yellow-300">
+          ⚠️ No withdrawal available. Weekly payouts are managed by Mithaas Express administration.
+        </p>
+      </div>
+    </div>
+  );
+      }
+
+// Add after WalletView
+function CODLimitView({ orders }: any) {
+  const codOrders = orders?.filter((o: any) => o.paymentMode === 'COD' && o.status !== 'delivered' && o.status !== 'cancelled') || [];
+  const totalCOD = codOrders.reduce((sum: number, o: any) => sum + (o.codAmount || o.totalAmount || 0), 0);
+  const limit = 500;
+  const remaining = Math.max(0, limit - totalCOD);
+  const exceeded = totalCOD > limit;
+
+  return (
+    <div className={`bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm ${exceeded ? 'border-2 border-red-500' : ''}`}>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+          COD Status
+        </h2>
+        <span className={`text-sm px-2 py-1 rounded-full ${exceeded ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+          {exceeded ? '⚠️ Exceeded Limit' : '✅ Within Limit'}
+        </span>
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex justify-between">
+          <span className="text-gray-600 dark:text-gray-400">Current COD Amount</span>
+          <span className="font-bold text-navy-800 dark:text-white">₹{totalCOD.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600 dark:text-gray-400">COD Limit</span>
+          <span className="font-bold text-navy-800 dark:text-white">₹{limit}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600 dark:text-gray-400">Remaining Capacity</span>
+          <span className={`font-bold ${exceeded ? 'text-red-600' : 'text-green-600'}`}>
+            ₹{remaining.toFixed(2)}
+          </span>
+        </div>
+
+        <div className="w-full bg-gray-200 dark:bg-navy-700 rounded-full h-2">
+          <div
+            className={`rounded-full h-2 transition-all ${exceeded ? 'bg-red-500' : 'bg-green-500'}`}
+            style={{ width: `${Math.min((totalCOD / limit) * 100, 100)}%` }}
+          />
+        </div>
+
+        {exceeded && (
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-sm text-red-700 dark:text-red-300">
+              ⚠️ COD limit exceeded. You will not receive new COD orders until the current COD amount is resolved.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+    }
+
+// Add after CODLimitView
+function ReferralView({ partner, referrals }: any) {
+  const [referralCode, setReferralCode] = useState(partner?.referralCode || '');
+  const [copied, setCopied] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(referralCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const totalBonus = referrals?.reduce((sum: number, r: any) => sum + (r.bonus || 0), 0) || 0;
+  const activeReferrals = referrals?.filter((r: any) => r.status === 'active').length || 0;
+  const completedReferrals = referrals?.filter((r: any) => r.status === 'completed').length || 0;
+
+  return (
+    <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+          Refer & Earn
+        </h2>
+        <button
+          onClick={() => setShowReferralModal(true)}
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+        >
+          Invite Friend
+        </button>
+      </div>
+
+      {/* Referral Code */}
+      <div className="bg-gradient-to-r from-purple-50 to-teal-50 dark:from-purple-900/20 dark:to-teal-900/20 rounded-xl p-4 mb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400">Your Referral Code</p>
+        <div className="flex items-center gap-3 mt-1">
+          <p className="text-2xl font-bold text-navy-800 dark:text-white font-mono">
+            {referralCode}
+          </p>
+          <button
+            onClick={handleCopyCode}
+            className="px-3 py-1 bg-white dark:bg-navy-700 border border-gray-200 dark:border-navy-600 rounded-lg hover:bg-gray-50 transition"
+          >
+            {copied ? '✅ Copied!' : '📋 Copy'}
+          </button>
+        </div>
+        <p className="text-xs text-gray-500 mt-1">Share this code with friends to earn rewards</p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+          <p className="text-2xl font-bold text-purple-600">{activeReferrals}</p>
+          <p className="text-xs text-gray-500">Active</p>
+        </div>
+        <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+          <p className="text-2xl font-bold text-green-600">{completedReferrals}</p>
+          <p className="text-xs text-gray-500">Completed</p>
+        </div>
+        <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+          <p className="text-2xl font-bold text-teal-600">₹{totalBonus}</p>
+          <p className="text-xs text-gray-500">Total Bonus</p>
+        </div>
+      </div>
+
+      {/* Referral History */}
+      {referrals && referrals.length > 0 ? (
+        <div className="space-y-2 max-h-40 overflow-y-auto">
+          {referrals.map((ref: any) => (
+            <div key={ref.id} className="flex justify-between text-sm p-2 bg-gray-50 dark:bg-navy-700 rounded-lg">
+              <span>{ref.referredName || 'Unknown'}</span>
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                ref.status === 'completed' ? 'bg-green-100 text-green-700' :
+                ref.status === 'active' ? 'bg-blue-100 text-blue-700' :
+                'bg-yellow-100 text-yellow-700'
+              }`}>
+                {ref.status}
+              </span>
+              <span className="text-teal-600">+₹{ref.bonus || 0}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 py-4">No referrals yet. Share your code to earn!</p>
+      )}
+
+      {/* Referral Modal */}
+      {showReferralModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-navy-800 dark:text-white mb-4">
+              Invite a Friend
+            </h3>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Share your referral code with friends and earn ₹50 for each friend who joins and completes their first delivery!
+              </p>
+              <div className="bg-gray-50 dark:bg-navy-700 p-4 rounded-lg text-center">
+                <p className="text-2xl font-bold font-mono text-navy-800 dark:text-white">
+                  {referralCode}
+                </p>
+              </div>
+              <button
+                onClick={handleCopyCode}
+                className="w-full p-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
+              >
+                {copied ? 'Copied!' : 'Copy Referral Code'}
+              </button>
+              <button
+                onClick={() => setShowReferralModal(false)}
+                className="w-full p-3 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg font-semibold hover:bg-gray-300 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+        }
+
+// Add after ReferralView
+function DeliveryHistoryView({ orders }: any) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  const filteredOrders = orders?.filter((order: any) => {
+    const matchesSearch = 
+      order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.vendorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.productName?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  }) || [];
+
+  const deliveredOrders = filteredOrders.filter((o: any) => o.status === 'delivered');
+
+  return (
+    <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+      <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+        Delivery History
+      </h2>
+
+      {/* Search & Filters */}
+      <div className="flex flex-col md:flex-row gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search by order, customer, vendor..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-navy-700 rounded-lg bg-white dark:bg-navy-700 text-navy-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="px-4 py-2 border border-gray-200 dark:border-navy-700 rounded-lg bg-white dark:bg-navy-700 text-navy-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+        >
+          <option value="all">All Status</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="failed">Failed</option>
+        </select>
+      </div>
+
+      {deliveredOrders.length === 0 ? (
+        <div className="text-center py-8">
+          <Package className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+          <p className="text-gray-500 dark:text-gray-400">No delivery history found</p>
+        </div>
+      ) : (
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {deliveredOrders.map((order: any) => (
+            <div key={order.id} className="flex flex-col md:flex-row md:items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+              <div>
+                <p className="font-medium text-navy-800 dark:text-white">{order.orderNumber}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {order.customerName} • {order.vendorName}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {order.productName} x{order.quantity} • ₹{order.totalAmount}
+                </p>
+              </div>
+              <div className="text-right mt-2 md:mt-0">
+                <p className="text-sm text-teal-600">₹{order.distance * 6 + 12}</p>
+                <span className="text-xs text-green-600">
+                  {order.deliveredAt?.toDate?.()?.toLocaleDateString() || 'Unknown date'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+      }
 
 // ============================================
 // 13. PROFILE VIEW
