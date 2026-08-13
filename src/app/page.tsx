@@ -94,7 +94,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  User,
+  User as FirebaseUser,
   updateProfile,
   sendPasswordResetEmail,
 } from "firebase/auth";
@@ -310,15 +310,15 @@ interface Complaint {
 // ============================================
 
 interface AuthContextType {
-  user: User | null;
-  partner: DeliveryPartner | null;
+  user: FirebaseUser | null;
+  partner: AppUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string, mobile: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  updatePartner: (data: Partial<DeliveryPartner>) => Promise<void>;
-}
+  updatePartner: (data: Partial<AppUser>) => Promise<void>;
+  } 
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -336,10 +336,10 @@ function useAuth() {
 
 export default function Home() {
   // --- AUTH STATE ---
-  const [user, setUser] = useState<User | null>(null);
-  const [partner, setPartner] = useState<AppUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
+const [user, setUser] = useState<FirebaseUser | null>(null);
+const [partner, setPartner] = useState<AppUser | null>(null);
+const [loading, setLoading] = useState(true);
+  
   // --- UI STATE ---
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
@@ -424,7 +424,7 @@ export default function Home() {
       // Fetch partner data
       const partnerDoc = await getDoc(doc(db, "partners", user.uid));
       if (partnerDoc.exists()) {
-        setPartner(partnerDoc.data() as DeliveryPartner);
+      setPartner(partnerDoc.data() as AppUser);
       }
       
       setIsLoginOpen(false);
@@ -732,11 +732,11 @@ export default function Home() {
     register,
     logout,
     resetPassword,
-    updatePartner: async (data) => {
+    updatePartner: async (data: Partial<AppUser>) => {
   if (!user) return;
   await updateDoc(doc(db, "partners", user.uid), data);
   setPartner((prev) => prev ? { ...prev, ...data } : null);
-    },
+},
   };
 
 return (
