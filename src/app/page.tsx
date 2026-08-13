@@ -829,13 +829,7 @@ return (
                       setShowOrderDetails(true);
                     }}
                   />
-                {order.customerNotes && (
-  <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-    <p className="text-sm text-yellow-800 dark:text-yellow-300">
-      📝 Customer Note: {order.customerNotes}
-    </p>
-  </div>
-)}
+               )}
 
                 {activeTab === "Shifts" && (
                   <ShiftsView
@@ -1594,24 +1588,13 @@ function OrderCard({ order, onAccept, onPickup, onDeliver, onUploadProof, onView
   const [showProofUpload, setShowProofUpload] = useState(false);
   const [proofFile, setProofFile] = useState<File | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setProofFile(e.target.files[0]);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (proofFile) {
-      await onUploadProof(order.id, proofFile);
-      setProofFile(null);
-      setShowProofUpload(false);
-    }
-  };
+  // ... handlers ...
 
   return (
     <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm hover:shadow-lg transition">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex-1">
+          {/* Order header */}
           <div className="flex items-center gap-3 mb-2">
             <span className="font-bold text-navy-800 dark:text-white">{order.orderNumber}</span>
             <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(order.status)}`}>
@@ -1619,6 +1602,7 @@ function OrderCard({ order, onAccept, onPickup, onDeliver, onUploadProof, onView
             </span>
           </div>
 
+          {/* Order details grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
             <p className="text-gray-600 dark:text-gray-400">
               <span className="font-medium">Customer:</span> {order.customerName}
@@ -1639,8 +1623,19 @@ function OrderCard({ order, onAccept, onPickup, onDeliver, onUploadProof, onView
               <span className="font-medium">Earning:</span> ₹{order.estimatedEarning || (order.distance * 6 + 12)}
             </p>
           </div>
+
+          {/* ✅ INSERT CUSTOMER NOTES HERE - RIGHT AFTER THE GRID */}
+          {order.customerNotes && (
+            <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-300 flex items-start gap-2">
+                <span className="text-lg">📝</span>
+                <span><strong>Customer Note:</strong> {order.customerNotes}</span>
+              </p>
+            </div>
+          )}
         </div>
 
+        {/* Action buttons */}
         <div className="flex flex-wrap gap-2">
           {order.status === "assigned" && (
             <button
@@ -1678,6 +1673,7 @@ function OrderCard({ order, onAccept, onPickup, onDeliver, onUploadProof, onView
         </div>
       </div>
 
+      
       {/* Proof Upload Modal */}
       {showProofUpload && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
