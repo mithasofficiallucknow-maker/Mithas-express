@@ -761,7 +761,6 @@ return (
             onLogout={logout}
           />
 
-
           {/* MAIN CONTENT */}
           <main className="flex-1">
             {!user ? (
@@ -829,7 +828,7 @@ return (
                       setShowOrderDetails(true);
                     }}
                   />
-               )}
+                )}
 
                 {activeTab === "Shifts" && (
                   <ShiftsView
@@ -840,28 +839,27 @@ return (
                     user={user}
                   />
                 )}
-                
+
                 {activeTab === "Earnings" && (
-  <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-    <h1 className="text-2xl md:text-3xl font-bold text-navy-800 dark:text-white">Earnings</h1>
-    <EarningsView earnings={earnings} orders={orders} partner={partner} />
-    
-    {/* New Components Added Here */}
-    <OnboardingFeeView partner={partner} onUpdate={async (data) => {
-      if (!user) return;
-      await updateDoc(doc(db, "partners", user.uid), data);
-      setPartner((prev) => prev ? { ...prev, ...data } : null);
-    }} />
-    
-    <WalletView earnings={earnings} partner={partner} orders={orders} />
-    
-    <CODLimitView orders={orders} />
-    
-    <ReferralView partner={partner} referrals={referrals} />
-    
-    <DeliveryHistoryView orders={orders} />
-  </div>
-)}
+                  <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+                    <h1 className="text-2xl md:text-3xl font-bold text-navy-800 dark:text-white">Earnings</h1>
+                    <EarningsView earnings={earnings} orders={orders} partner={partner} />
+                    
+                    <OnboardingFeeView partner={partner} onUpdate={async (data) => {
+                      if (!user) return;
+                      await updateDoc(doc(db, "partners", user.uid), data);
+                      setPartner((prev) => prev ? { ...prev, ...data } : null);
+                    }} />
+                    
+                    <WalletView earnings={earnings} partner={partner} orders={orders} />
+                    
+                    <CODLimitView orders={orders} />
+                    
+                    <ReferralView partner={partner} referrals={referrals} />
+                    
+                    <DeliveryHistoryView orders={orders} />
+                  </div>
+                )}
 
                 {activeTab === "Profile" && (
                   <ProfileView
@@ -889,7 +887,7 @@ return (
             )}
           </main>
 
-        {/* BOTTOM NAVIGATION */}
+          {/* BOTTOM NAVIGATION */}
           {user && (
             <BottomNavigation
               activeTab={activeTab}
@@ -898,7 +896,6 @@ return (
               notifications={notifications}
             />
           )}
-
 
           {/* MODALS */}
           {isLoginOpen && (
@@ -963,12 +960,10 @@ return (
       </div>
     </AuthContext.Provider>
   );
-}
-
+  
 // ============================================
 // 5. HEADER COMPONENT
 // ============================================
-
 function Header({
   user,
   partner,
@@ -1157,7 +1152,51 @@ function Header({
       </div>
     </header>
   );
-}
+  }
+
+  function BottomNavigation({ activeTab, setActiveTab, user, notifications }: any) {
+  const unreadCount = notifications?.filter((n: AppNotification) => !n.read).length || 0;
+
+  const tabs = [
+    { id: "Home", icon: Home, label: "Home" },
+    { id: "Orders", icon: Package, label: "Orders" },
+    { id: "Shifts", icon: Clock, label: "Shifts" },
+    { id: "Earnings", icon: Wallet, label: "Earnings" },
+    { id: "Profile", icon: User, label: "Profile" },
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-navy-800 border-t border-gray-200 dark:border-navy-700 md:hidden">
+      <div className="flex items-center justify-around h-16">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center justify-center flex-1 h-full relative ${
+                isActive ? "text-teal-600 dark:text-teal-400" : "text-gray-500 dark:text-gray-400"
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-xs mt-1">{tab.label}</span>
+              {tab.id === "Orders" && unreadCount > 0 && (
+                <span className="absolute top-1 right-1/3 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+              {isActive && (
+                <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-teal-600 rounded-full" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+    }
+  
 
 // ============================================
 // 6. HERO SECTION
