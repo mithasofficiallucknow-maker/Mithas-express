@@ -330,6 +330,239 @@ function useAuth() {
   return context;
 }
 
+function Header({
+  user,
+  partner,
+  onOpenLogin,
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
+  notifications,
+  showNotifications,
+  setShowNotifications,
+  onMarkNotificationRead,
+  darkMode,
+  setDarkMode,
+  language,
+  setLanguage,
+  onLogout,
+}: any) {
+  const unreadCount = notifications?.filter((n: AppNotification) => !n.read).length || 0;
+
+  return (
+    <header className="sticky top-0 z-50 glass-effect dark:bg-navy-900/90">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 md:h-20">
+          {/* Logo */}
+          <div className="flex items-center gap-2">
+            <div className="relative w-10 h-10 md:w-12 md:h-12">
+              <Image src="/Logo.png" alt="Mithaas Express" fill className="object-contain" />
+            </div>
+            <span className="text-xl md:text-2xl font-bold text-teal-600 dark:text-teal-400">
+              Mithaas Express
+            </span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+            >
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
+            <button
+              onClick={() => setLanguage(language === "en" ? "hi" : "en")}
+              className="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+            >
+              <Globe size={18} />
+              <span className="text-sm font-medium">{language === "en" ? "EN" : "हिं"}</span>
+            </button>
+
+            {user ? (
+              <>
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+                >
+                  <Bell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                <div className="flex items-center gap-3">
+                  <div className="text-sm text-right">
+                    <p className="font-medium">{user.displayName || "Partner"}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {partner?.status || "Pending"}
+                    </p>
+                  </div>
+                  <button
+                    onClick={onLogout}
+                    className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={onOpenLogin}
+                  className="px-4 py-2 text-sm font-medium text-navy-700 dark:text-white hover:bg-gray-100 dark:hover:bg-navy-700 rounded-lg transition"
+                >
+                  Login
+                </button>
+                <button className="px-4 py-2 text-sm font-medium bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition">
+                  Join Now
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-gray-200 dark:border-navy-700">
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="flex items-center justify-between px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700"
+              >
+                <span>Dark Mode</span>
+                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+
+              <button
+                onClick={() => setLanguage(language === "en" ? "hi" : "en")}
+                className="flex items-center justify-between px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700"
+              >
+                <span>Language</span>
+                <span>{language === "en" ? "English" : "हिंदी"}</span>
+              </button>
+
+              {user ? (
+                <>
+                  <div className="px-4 py-2">
+                    <p className="font-medium">{user.displayName}</p>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                  </div>
+                  <button
+                    onClick={onLogout}
+                    className="mx-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={onOpenLogin}
+                    className="mx-4 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+                  >
+                    Login
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Notifications Dropdown */}
+        {showNotifications && user && (
+          <div className="absolute right-0 top-full mt-2 w-80 md:w-96 max-h-96 overflow-y-auto bg-white dark:bg-navy-800 rounded-xl shadow-xl border border-gray-200 dark:border-navy-700 p-2">
+            <div className="flex items-center justify-between p-2 border-b border-gray-200 dark:border-navy-700">
+              <h3 className="font-semibold">Notifications</h3>
+              <span className="text-sm text-gray-500">{unreadCount} unread</span>
+            </div>
+            {notifications?.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">
+                <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>No notifications yet</p>
+              </div>
+            ) : (
+              notifications?.map((notif: AppNotification) => (
+                <div
+                  key={notif.id}
+                  className={`p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-700 transition ${
+                    !notif.read ? "bg-teal-50 dark:bg-navy-700/50" : ""
+                  }`}
+                  onClick={() => onMarkNotificationRead(notif.id)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{notif.title}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{notif.message}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {notif.timestamp?.toDate?.()?.toLocaleDateString() || "Just now"}
+                      </p>
+                    </div>
+                    {!notif.read && <div className="w-2 h-2 bg-teal-500 rounded-full mt-2"></div>}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function BottomNavigation({ activeTab, setActiveTab, user, notifications }: any) {
+  const unreadCount = notifications?.filter((n: AppNotification) => !n.read).length || 0;
+
+  const tabs = [
+    { id: "Home", icon: Home, label: "Home" },
+    { id: "Orders", icon: Package, label: "Orders" },
+    { id: "Shifts", icon: Clock, label: "Shifts" },
+    { id: "Earnings", icon: Wallet, label: "Earnings" },
+    { id: "Profile", icon: User, label: "Profile" },
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-navy-800 border-t border-gray-200 dark:border-navy-700 md:hidden">
+      <div className="flex items-center justify-around h-16">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center justify-center flex-1 h-full relative ${
+                isActive ? "text-teal-600 dark:text-teal-400" : "text-gray-500 dark:text-gray-400"
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-xs mt-1">{tab.label}</span>
+              {tab.id === "Orders" && unreadCount > 0 && (
+                <span className="absolute top-1 right-1/3 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+              {isActive && (
+                <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-teal-600 rounded-full" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+            }
+
 // ============================================
 // 4. MAIN COMPONENT
 // ============================================
@@ -960,243 +1193,6 @@ return (
       </div>
     </AuthContext.Provider>
   );
-  
-// ============================================
-// 5. HEADER COMPONENT
-// ============================================
-function Header({
-  user,
-  partner,
-  onOpenLogin,
-  isMobileMenuOpen,
-  setIsMobileMenuOpen,
-  notifications,
-  showNotifications,
-  setShowNotifications,
-  onMarkNotificationRead,
-  darkMode,
-  setDarkMode,
-  language,
-  setLanguage,
-  onLogout,
-}: any) {
-  const unreadCount = notifications?.filter((n: AppNotification) => !n.read).length || 0;
-
-  return (
-    <header className="sticky top-0 z-50 glass-effect dark:bg-navy-900/90">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="relative w-10 h-10 md:w-12 md:h-12">
-              <Image src="/Logo.png" alt="Mithaas Express" fill className="object-contain" />
-            </div>
-            <span className="text-xl md:text-2xl font-bold text-teal-600 dark:text-teal-400">
-              Mithaas Express
-            </span>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-            >
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            <button
-              onClick={() => setLanguage(language === "en" ? "hi" : "en")}
-              className="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-            >
-              <Globe size={18} />
-              <span className="text-sm font-medium">{language === "en" ? "EN" : "हिं"}</span>
-            </button>
-
-            {user ? (
-              <>
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-                >
-                  <Bell size={20} />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </span>
-                  )}
-                </button>
-
-                <div className="flex items-center gap-3">
-                  <div className="text-sm text-right">
-                    <p className="font-medium">{user.displayName || "Partner"}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {partner?.status || "Pending"}
-                    </p>
-                  </div>
-                  <button
-                    onClick={onLogout}
-                    className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={onOpenLogin}
-                  className="px-4 py-2 text-sm font-medium text-navy-700 dark:text-white hover:bg-gray-100 dark:hover:bg-navy-700 rounded-lg transition"
-                >
-                  Login
-                </button>
-                <button className="px-4 py-2 text-sm font-medium bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition">
-                  Join Now
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 dark:border-navy-700">
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="flex items-center justify-between px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700"
-              >
-                <span>Dark Mode</span>
-                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-
-              <button
-                onClick={() => setLanguage(language === "en" ? "hi" : "en")}
-                className="flex items-center justify-between px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700"
-              >
-                <span>Language</span>
-                <span>{language === "en" ? "English" : "हिंदी"}</span>
-              </button>
-
-              {user ? (
-                <>
-                  <div className="px-4 py-2">
-                    <p className="font-medium">{user.displayName}</p>
-                    <p className="text-sm text-gray-500">{user.email}</p>
-                  </div>
-                  <button
-                    onClick={onLogout}
-                    className="mx-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={onOpenLogin}
-                    className="mx-4 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
-                  >
-                    Login
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Notifications Dropdown */}
-        {showNotifications && user && (
-          <div className="absolute right-0 top-full mt-2 w-80 md:w-96 max-h-96 overflow-y-auto bg-white dark:bg-navy-800 rounded-xl shadow-xl border border-gray-200 dark:border-navy-700 p-2">
-            <div className="flex items-center justify-between p-2 border-b border-gray-200 dark:border-navy-700">
-              <h3 className="font-semibold">Notifications</h3>
-              <span className="text-sm text-gray-500">{unreadCount} unread</span>
-            </div>
-            {notifications?.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>No notifications yet</p>
-              </div>
-            ) : (
-              notifications?.map((notif: AppNotification) => (
-                <div
-                  key={notif.id}
-                  className={`p-3 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-700 transition ${
-                    !notif.read ? "bg-teal-50 dark:bg-navy-700/50" : ""
-                  }`}
-                  onClick={() => onMarkNotificationRead(notif.id)}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{notif.title}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{notif.message}</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {notif.timestamp?.toDate?.()?.toLocaleDateString() || "Just now"}
-                      </p>
-                    </div>
-                    {!notif.read && <div className="w-2 h-2 bg-teal-500 rounded-full mt-2"></div>}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </div>
-    </header>
-  );
-  }
-
-  function BottomNavigation({ activeTab, setActiveTab, user, notifications }: any) {
-  const unreadCount = notifications?.filter((n: AppNotification) => !n.read).length || 0;
-
-  const tabs = [
-    { id: "Home", icon: Home, label: "Home" },
-    { id: "Orders", icon: Package, label: "Orders" },
-    { id: "Shifts", icon: Clock, label: "Shifts" },
-    { id: "Earnings", icon: Wallet, label: "Earnings" },
-    { id: "Profile", icon: User, label: "Profile" },
-  ];
-
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-navy-800 border-t border-gray-200 dark:border-navy-700 md:hidden">
-      <div className="flex items-center justify-around h-16">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center justify-center flex-1 h-full relative ${
-                isActive ? "text-teal-600 dark:text-teal-400" : "text-gray-500 dark:text-gray-400"
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="text-xs mt-1">{tab.label}</span>
-              {tab.id === "Orders" && unreadCount > 0 && (
-                <span className="absolute top-1 right-1/3 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-              {isActive && (
-                <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-teal-600 rounded-full" />
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-    }
-  
 
 // ============================================
 // 6. HERO SECTION
