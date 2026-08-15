@@ -561,7 +561,7 @@ function BottomNavigation({ activeTab, setActiveTab, user, notifications }: any)
       </div>
     </nav>
   );
-            }
+}
 
 // ============================================
 // 4. MAIN COMPONENT
@@ -847,19 +847,19 @@ const [loading, setLoading] = useState(true);
   }, []);
 
   const handleBookShift = useCallback(async (shiftId: string) => {
-    if (!user) return;
-    try {
-      await updateDoc(doc(db, "shifts", shiftId), {
-        bookedBy: user.uid,
-        bookedAt: serverTimestamp(),
-        available: false,
-      });
-      setSelectedShift(shiftId);
-      setShowShiftBooking(false);
-    } catch (error) {
-      console.error("Error booking shift:", error);
-    }
-  }, [user]);
+  if (!user) return;
+  try {
+    await updateDoc(doc(db, "shifts", shiftId), {
+      bookedBy: user.uid,
+      bookedAt: serverTimestamp(),
+      available: false,
+    });  // ← } ADD KARO
+    setSelectedShift(shiftId);
+    setShowShiftBooking(false);
+  } catch (error) {
+    console.error("Error booking shift:", error);
+  }
+}, [user]);
 
   const handleAcceptOrder = useCallback(async (orderId: string) => {
     try {
