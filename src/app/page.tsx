@@ -1523,6 +1523,105 @@ function QuickAction({ icon, label, onClick, color }: any) {
   );
 }
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProofFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (proofFile && onUploadProof) {
+      await onUploadProof(order.id, proofFile);
+      setShowProofModal(false);
+      setProofFile(null);
+    }
+  };
+
+  return (
+    <div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-navy-700">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <span className="text-xs text-gray-500 font-mono">{order.orderNumber}</span>
+          <h3 className="font-semibold text-navy-800 dark:text-white">{order.productName}</h3>
+        </div>
+        <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+          order.status === 'delivered' ? 'bg-green-100 text-green-700' :
+          order.status === 'accepted' ? 'bg-blue-100 text-blue-700' :
+          'bg-yellow-100 text-yellow-700'
+        }`}>
+          {order.status?.toUpperCase()}
+        </span>
+      </div>
+
+      <div className="text-sm space-y-1 mb-4 text-gray-600 dark:text-gray-300">
+        <p>👤 {order.customerName} ({order.customerPhone})</p>
+        <p>📍 {order.customerAddress}</p>
+        <p>🏪 {order.vendorName}</p>
+      </div>
+
+      <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-navy-700">
+        <div className="text-sm">
+          <span className="text-gray-500">Earnings: </span>
+          <span className="font-bold text-teal-600">₹{order.estimatedEarning || (order.distance * 6 + 12)}</span>
+        </div>
+
+        <div className="flex gap-2">
+          {order.status === 'assigned' && (
+            <button
+              onClick={() => onAccept?.(order.id)}
+              className="px-3 py-1.5 bg-teal-600 text-white text-sm rounded-lg hover:bg-teal-700 transition"
+            >
+              Accept
+            </button>
+          )}
+          {order.status === 'accepted' && (
+            <button
+              onClick={() => onPickup?.(order.id)}
+              className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
+            >
+              Pickup
+            </button>
+          )}
+          {(order.status === 'picked_up' || order.status === 'out_for_delivery') && (
+            <button
+              onClick={() => setShowProofModal(true)}
+              className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition"
+            >
+              Deliver
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Proof Modal */}
+      {showProofModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold text-navy-800 dark:text-white mb-4">Upload Delivery Proof</h3>
+            <input type="file" accept="image/*" onChange={handleFileChange} className="w-full mb-4 text-sm" />
+            <div className="flex gap-2">
+              <button
+                onClick={handleUpload}
+                disabled={!proofFile}
+                className="flex-1 py-2 bg-teal-600 text-white rounded-lg disabled:opacity-50"
+              >
+                Submit
+              </button>
+              <button
+                onClick={() => setShowProofModal(false)}
+                className="flex-1 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+                        
 // ============================================
 // 10. ORDERS VIEW
 // ============================================
