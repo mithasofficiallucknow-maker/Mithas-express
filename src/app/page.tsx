@@ -1623,7 +1623,19 @@ function OrderCard({ order, onAccept, onPickup, onDeliver, onUploadProof, onView
   const [showProofUpload, setShowProofUpload] = useState(false);
   const [proofFile, setProofFile] = useState<File | null>(null);
 
-  // ... handlers ...
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files[0]) {
+    setProofFile(e.target.files[0]);
+  }
+};
+
+const handleUpload = async () => {
+  if (proofFile) {
+    await onUploadProof(order.id, proofFile);
+    setProofFile(null);
+    setShowProofUpload(false);
+  }
+};
 
   return (
     <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm hover:shadow-lg transition">
@@ -2857,52 +2869,7 @@ function OrderDetailsModal({
   );
 }
 
-// ============================================
-// 17. BOTTOM NAVIGATION
-// ============================================
 
-function BottomNavigation({ activeTab, setActiveTab, user, notifications }: any) {
-  const unreadCount = notifications?.filter((n: AppNotification) => !n.read).length || 0;
-
-  const tabs = [
-    { id: "Home", icon: Home, label: "Home" },
-    { id: "Orders", icon: Package, label: "Orders" },
-    { id: "Shifts", icon: Clock, label: "Shifts" },
-    { id: "Earnings", icon: Wallet, label: "Earnings" },
-    { id: "Profile", icon: User, label: "Profile" },
-  ];
-
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-navy-800 border-t border-gray-200 dark:border-navy-700 md:hidden">
-      <div className="flex items-center justify-around h-16">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center justify-center flex-1 h-full relative ${
-                isActive ? "text-teal-600 dark:text-teal-400" : "text-gray-500 dark:text-gray-400"
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="text-xs mt-1">{tab.label}</span>
-              {tab.id === "Orders" && unreadCount > 0 && (
-                <span className="absolute top-1 right-1/3 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-              {isActive && (
-                <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-teal-600 rounded-full" />
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
 
 // ============================================
 // 18. ADMIN PANEL (Simplified)
