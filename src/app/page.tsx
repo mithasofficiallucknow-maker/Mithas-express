@@ -127,6 +127,8 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  razorpayId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+  razorpayId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET,
 };
 
 const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
@@ -874,6 +876,53 @@ const [loading, setLoading] = useState(true);
     }
   }, [user]);
 
+  // ============================================
+// ORDER MANAGEMENT - COMPLETE FUNCTIONS
+// ============================================
+
+const handleDeclineOrder = useCallback(async (orderId: string) => {
+  try {
+    await updateDoc(doc(db, "orders", orderId), {
+      status: "cancelled",
+      cancelledAt: serverTimestamp(),
+    });
+    // Show notification
+    setNotifications((prev) => [
+      {
+        id: Date.now().toString(),
+        title: "Order Declined",
+        message: "You have declined order #" + orderId,
+        type: "order",
+        read: false,
+        timestamp: serverTimestamp() as Timestamp,
+      },
+      ...prev,
+    ]);
+  } catch (error) {
+    console.error("Error declining order:", error);
+  }
+}, []);
+
+const handleGoingToPickup = useCallback(async (orderId: string) => {
+  try {
+    await updateDoc(doc(db, "orders", orderId), {
+      status: "going_to_pickup",
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+  }
+}, []);
+
+const handleOutForDelivery = useCallback(async (orderId: string) => {
+  try {
+    await updateDoc(doc(db, "orders", orderId), {
+      status: "out_for_delivery",
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+  }
+}, []);
+  
   const handlePickupOrder = useCallback(async (orderId: string) => {
     try {
       await updateDoc(doc(db, "orders", orderId), {
@@ -1050,18 +1099,21 @@ return (
                 )}
 
                 {activeTab === "Orders" && (
-                  <OrdersView
-                    orders={orders}
-                    onAcceptOrder={handleAcceptOrder}
-                    onPickupOrder={handlePickupOrder}
-                    onDeliverOrder={handleDeliverOrder}
-                    onUploadProof={handleUploadDeliveryProof}
-                    onViewOrder={(order) => {
-                      setSelectedOrder(order);
-                      setShowOrderDetails(true);
-                    }}
-                  />
-                )}
+  <OrdersView
+    orders={orders}
+    onAcceptOrder={handleAcceptOrder}
+    onDeclineOrder={handleDeclineOrder}
+    onGoingToPickup={handleGoingToPickup}
+    onPickupOrder={handlePickupOrder}
+    onOutForDelivery={handleOutForDelivery}
+    onDeliverOrder={handleDeliverOrder}
+    onUploadProof={handleUploadDeliveryProof}
+    onViewOrder={(order) => {
+      setSelectedOrder(order);
+      setShowOrderDetails(true);
+    }}
+  />
+)}
 
                 {activeTab === "Shifts" && (
                   <ShiftsView
@@ -1629,7 +1681,10 @@ function QuickAction({ icon, label, onClick, color }: any) {
 function OrdersView({
   orders,
   onAcceptOrder,
+  onDeclineOrder,
+  onGoingToPickup,
   onPickupOrder,
+  onOutForDelivery,
   onDeliverOrder,
   onUploadProof,
   onViewOrder,
@@ -1793,23 +1848,39 @@ const handleUpload = async () => {
           )}
 
           {order.status === "accepted" && (
-            <button
-              onClick={() => onPickup(order.id)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              Pickup
-            </button>
-          )}
+  <>
+    <button
+      onClick={() => onGoingToPickup(order.id)}
+      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+    >
+      Going to Pickup
+    </button>
+    <button
+      onClick={() => onDecline(order.id)}
+      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+    >
+      Decline
+    </button>
+  </>
+)}
 
-          {(order.status === "picked_up" || order.status === "out_for_delivery") && (
-            <button
-              onClick={() => setShowProofUpload(true)}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-            >
-              Deliver
-            </button>
-          )}
+{order.status === "going_to_pickup" && (
+  <button
+    onClick={() => onPickup(order.id)}
+    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+  >
+    Picked Up
+  </button>
+)}
 
+{order.status === "picked_up" && (
+  <button
+    onClick={() => onOutForDelivery(order.id)}
+    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+  >
+    Out for Delivery
+  </button>
+)}
           <button
             onClick={() => onView(order)}
             className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-navy-600 transition"
