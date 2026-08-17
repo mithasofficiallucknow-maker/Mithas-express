@@ -623,6 +623,25 @@ const [loading, setLoading] = useState(true);
   const [adminSearch, setAdminSearch] = useState("");
 
   // ============================================
+// ONLINE/OFFLINE STATUS
+// ============================================
+
+const toggleOnlineStatus = useCallback(async () => {
+  if (!user) return;
+  const newStatus = !isOnline;
+  setIsOnline(newStatus);
+  try {
+    await updateDoc(doc(db, "partners", user.uid), {
+      isOnline: newStatus,
+      lastOnlineAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error("Error updating online status:", error);
+    setIsOnline(!newStatus); // Revert on error
+  }
+}, [user, isOnline]);
+  
+  // ============================================
   // HERO BANNERS
   // ============================================
   const HERO_BANNERS = [
@@ -780,6 +799,42 @@ const [loading, setLoading] = useState(true);
     return () => unsubscribe();
   }, [user]);
 
+  // ============================================
+// NOTIFICATION SOUND
+// ============================================
+
+useEffect(() => {
+  // Check for new unread notifications
+  const unread = notifications.filter(n => !n.read && n.type === "order");
+  if (unread.length > 0) {
+    // Play notification sound using Web Audio API
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = "sine";
+      gainNode.gain.value = 0.3;
+      
+      oscillator.start();
+      setTimeout(() => {
+        oscillator.stop();
+      }, 300);
+      
+      setTimeout(() => {
+        oscillator.start();
+        setTimeout(() => oscillator.stop(), 300);
+      }, 400);
+    } catch (error) {
+      console.log("Audio not available");
+    }
+  }
+}, [notifications]);
+  
   // ============================================
   // ORDERS LISTENER
   // ============================================
@@ -1429,15 +1484,15 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
         </div>
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setIsOnline(!isOnline)}
-            className={`px-4 py-2 rounded-full font-medium transition ${
-              isOnline
-                ? "bg-green-500 text-white hover:bg-green-600"
-                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-            }`}
-          >
-            {isOnline ? "🟢 Online" : "⚪ Offline"}
-          </button>
+  onClick={toggleOnlineStatus}
+  className={`px-4 py-2 rounded-full font-medium transition ${
+    isOnline
+      ? "bg-green-500 text-white hover:bg-green-600"
+      : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+  }`}
+>
+  {isOnline ? "🟢 Online" : "⚪ Offline"}
+</button>
         </div>
       </div>
 
@@ -1468,33 +1523,33 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
           change="+2%"
         />
       </div>
-
+      
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <QuickAction
-          icon={<Package className="w-6 h-6" />}
-          label="View Orders"
-          onClick={() => {}}
-          color="bg-teal-50 dark:bg-teal-900/20"
-        />
-        <QuickAction
-          icon={<Clock className="w-6 h-6" />}
-          label="Book Shift"
-          onClick={() => {}}
-          color="bg-purple-50 dark:bg-purple-900/20"
-        />
-        <QuickAction
-          icon={<Wallet className="w-6 h-6" />}
-          label="Earnings"
-          onClick={() => {}}
-          color="bg-green-50 dark:bg-green-900/20"
-        />
-        <QuickAction
-          icon={<Users className="w-6 h-6" />}
-          label="Refer & Earn"
-          onClick={() => {}}
-          color="bg-orange-50 dark:bg-orange-900/20"
-        />
+  icon={<Package className="w-6 h-6" />}
+  label="View Orders"
+  onClick={() => setActiveTab("Orders")}
+  color="bg-teal-50 dark:bg-teal-900/20"
+/>
+<QuickAction
+  icon={<Clock className="w-6 h-6" />}
+  label="Book Shift"
+  onClick={() => setActiveTab("Shifts")}
+  color="bg-purple-50 dark:bg-purple-900/20"
+/>
+<QuickAction
+  icon={<Wallet className="w-6 h-6" />}
+  label="Earnings"
+  onClick={() => setActiveTab("Earnings")}
+  color="bg-green-50 dark:bg-green-900/20"
+/>
+<QuickAction
+  icon={<Users className="w-6 h-6" />}
+  label="Refer & Earn"
+  onClick={() => setActiveTab("Profile")}
+  color="bg-orange-50 dark:bg-orange-900/20"
+/>
       </div>
 
       {/* Recent Orders */}
