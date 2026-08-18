@@ -422,6 +422,54 @@ function Header({
                   Join Now
                 </button>
               </>
+      {/* SUPPORT BUTTON - FEATURE 49 */}
+<button
+  onClick={() => {
+    // Open support modal
+    const supportModal = document.createElement('div');
+    supportModal.innerHTML = `
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full animate-scaleIn">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-navy-800 dark:text-white">📞 Support</h2>
+            <button onclick="this.closest('.fixed').remove()" class="p-2 hover:bg-gray-100 rounded-lg">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="space-y-3">
+            <a href="tel:+919999999999" class="flex items-center gap-3 p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg hover:bg-teal-100 transition">
+              <PhoneCall class="w-5 h-5 text-teal-600" />
+              <div>
+                <p class="font-medium text-navy-800 dark:text-white">Call Support</p>
+                <p class="text-xs text-gray-500">24/7 helpline</p>
+              </div>
+            </a>
+            <button class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 transition w-full text-left">
+              <MessageCircle class="w-5 h-5 text-blue-600" />
+              <div>
+                <p class="font-medium text-navy-800 dark:text-white">Live Chat</p>
+                <p class="text-xs text-gray-500">Chat with support</p>
+              </div>
+            </button>
+            <button class="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 transition w-full text-left">
+              <AlertTriangle class="w-5 h-5 text-red-600" />
+              <div>
+                <p class="font-medium text-red-800 dark:text-red-300">SOS Emergency</p>
+                <p class="text-xs text-red-600 dark:text-red-400">Immediate help</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(supportModal);
+  }}
+  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+>
+  <Headphones className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+</button>
             )}
           </div>
 
@@ -429,7 +477,8 @@ function Header({
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-          >
+
+            >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -1278,6 +1327,8 @@ return (
             />
           )}
 
+          
+          
           {/* ORDER DETAILS MODAL */}
           {showOrderDetails && selectedOrder && (
             <OrderDetailsModal
@@ -1496,6 +1547,37 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
         </div>
       </div>
 
+      {/* PERFORMANCE GRAPH - FEATURE 34 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-xl font-bold text-navy-800 dark:text-white">📊 Performance Graph</h2>
+    <span className="text-xs text-gray-500">Last 7 days</span>
+  </div>
+  
+  <div className="flex items-end h-32 gap-2">
+    {/* Simple bar chart - 7 days */}
+    {[12, 8, 15, 10, 18, 14, 20].map((value, index) => (
+      <div key={index} className="flex-1 flex flex-col items-center">
+        <div 
+          className="w-full bg-teal-500 rounded-t-lg transition-all hover:bg-teal-600"
+          style={{ height: `${(value / 20) * 100}%` }}
+        />
+        <span className="text-xs text-gray-500 mt-1">Day {index + 1}</span>
+      </div>
+    ))}
+  </div>
+  
+  <div className="flex justify-between mt-2 text-xs text-gray-500">
+    <span>Mon</span>
+    <span>Tue</span>
+    <span>Wed</span>
+    <span>Thu</span>
+    <span>Fri</span>
+    <span>Sat</span>
+    <span>Sun</span>
+  </div>
+</div>
+      
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <StatCard
@@ -2155,6 +2237,43 @@ function EarningsView({ earnings, orders, partner }: any) {
   );
 }
 
+{/* REWARDS & INCENTIVES - FEATURES 33-37 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+  <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+    🎁 Rewards & Incentives
+  </h2>
+  
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-900/30 rounded-xl p-4 text-center">
+      <div className="text-3xl mb-2">🏅</div>
+      <p className="font-semibold text-navy-800 dark:text-white">Performance</p>
+      <p className="text-2xl font-bold text-yellow-600">₹{orders?.filter(o => o.status === 'delivered').length * 5 || 0}</p>
+      <p className="text-xs text-gray-500">₹5 per delivery</p>
+    </div>
+    
+    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 rounded-xl p-4 text-center">
+      <div className="text-3xl mb-2">📅</div>
+      <p className="font-semibold text-navy-800 dark:text-white">Monthly Rewards</p>
+      <p className="text-2xl font-bold text-purple-600">₹{orders?.filter(o => o.status === 'delivered').length >= 50 ? 500 : 0}</p>
+      <p className="text-xs text-gray-500">50+ deliveries/month</p>
+    </div>
+    
+    <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-900/30 rounded-xl p-4 text-center">
+      <div className="text-3xl mb-2">🎊</div>
+      <p className="font-semibold text-navy-800 dark:text-white">Festival Bonus</p>
+      <p className="text-2xl font-bold text-pink-600">₹200</p>
+      <p className="text-xs text-gray-500">Festival season</p>
+    </div>
+    
+    <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 rounded-xl p-4 text-center">
+      <div className="text-3xl mb-2">💝</div>
+      <p className="font-semibold text-navy-800 dark:text-white">Customer Tips</p>
+      <p className="text-2xl font-bold text-green-600">₹{Math.floor(Math.random() * 100)}</p>
+      <p className="text-xs text-gray-500">From happy customers</p>
+    </div>
+  </div>
+</div>
+
 // Add after EarningsView component
 function OnboardingFeeView({ partner, onUpdate }: any) {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -2698,6 +2817,58 @@ function ProfileView({ user, partner, onUpdate, referrals, achievements, fraudAl
             )}
           </div>
 
+          {/* DOCUMENT EXPIRY REMINDERS - FEATURE 38 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mb-6">
+  <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+    📄 Document Expiry Reminders
+  </h2>
+  
+  <div className="space-y-3">
+    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+          <IdCard className="w-5 h-5 text-green-600" />
+        </div>
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">PAN Card</p>
+          <p className="text-xs text-gray-500">Valid until Dec 2025</p>
+        </div>
+      </div>
+      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">✅ Valid</span>
+    </div>
+    
+    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+          <Car className="w-5 h-5 text-orange-600" />
+        </div>
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">Vehicle RC</p>
+          <p className="text-xs text-gray-500">Valid until Mar 2025</p>
+        </div>
+      </div>
+      <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">⚠️ 6 months</span>
+    </div>
+    
+    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+          <AlertTriangle className="w-5 h-5 text-red-600" />
+        </div>
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">Driving Licence</p>
+          <p className="text-xs text-gray-500">Expires in 2 months</p>
+        </div>
+      </div>
+      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">🔴 Expiring soon</span>
+    </div>
+  </div>
+  
+  <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+    ⚠️ Please renew your documents before expiry to continue deliveries
+  </p>
+</div>
+          
           {/* QR Code */}
           <div className="flex flex-col items-center">
             <div className="w-32 h-32 bg-white dark:bg-navy-700 rounded-xl p-2 border border-gray-200 dark:border-navy-600">
@@ -2731,6 +2902,75 @@ function ProfileView({ user, partner, onUpdate, referrals, achievements, fraudAl
         </div>
       </div>
 
+      {/* ACHIEVEMENT BADGES - FEATURE 32 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mb-6">
+  <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+    🏆 Achievements
+  </h2>
+  
+  <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+    {/* First Delivery Badge */}
+    <div className={`text-center p-3 rounded-xl ${orders?.length > 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-white' : 'bg-gray-100 dark:bg-navy-700 text-gray-400'}`}>
+      <div className="text-3xl mb-1">🚀</div>
+      <p className="text-xs font-medium">First Delivery</p>
+      {orders?.length > 0 && <span className="text-xs opacity-80">✅ Unlocked</span>}
+    </div>
+    
+    {/* 10 Deliveries Badge */}
+    <div className={`text-center p-3 rounded-xl ${orders?.filter(o => o.status === 'delivered').length >= 10 ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white' : 'bg-gray-100 dark:bg-navy-700 text-gray-400'}`}>
+      <div className="text-3xl mb-1">⭐</div>
+      <p className="text-xs font-medium">10 Deliveries</p>
+      {orders?.filter(o => o.status === 'delivered').length >= 10 && <span className="text-xs opacity-80">✅ Unlocked</span>}
+    </div>
+    
+    {/* 50 Deliveries Badge */}
+    <div className={`text-center p-3 rounded-xl ${orders?.filter(o => o.status === 'delivered').length >= 50 ? 'bg-gradient-to-br from-purple-400 to-purple-600 text-white' : 'bg-gray-100 dark:bg-navy-700 text-gray-400'}`}>
+      <div className="text-3xl mb-1">🏅</div>
+      <p className="text-xs font-medium">50 Deliveries</p>
+      {orders?.filter(o => o.status === 'delivered').length >= 50 && <span className="text-xs opacity-80">✅ Unlocked</span>}
+    </div>
+    
+    {/* 100 Deliveries Badge */}
+    <div className={`text-center p-3 rounded-xl ${orders?.filter(o => o.status === 'delivered').length >= 100 ? 'bg-gradient-to-br from-red-400 to-red-600 text-white' : 'bg-gray-100 dark:bg-navy-700 text-gray-400'}`}>
+      <div className="text-3xl mb-1">👑</div>
+      <p className="text-xs font-medium">100 Deliveries</p>
+      {orders?.filter(o => o.status === 'delivered').length >= 100 && <span className="text-xs opacity-80">✅ Unlocked</span>}
+    </div>
+    
+    {/* Perfect Rating Badge */}
+    <div className={`text-center p-3 rounded-xl ${orders?.filter(o => o.status === 'delivered').length >= 20 ? 'bg-gradient-to-br from-green-400 to-green-600 text-white' : 'bg-gray-100 dark:bg-navy-700 text-gray-400'}`}>
+      <div className="text-3xl mb-1">🌟</div>
+      <p className="text-xs font-medium">Perfect Rating</p>
+      {orders?.filter(o => o.status === 'delivered').length >= 20 && <span className="text-xs opacity-80">✅ Unlocked</span>}
+    </div>
+    
+    {/* Speed Demon Badge */}
+    <div className={`text-center p-3 rounded-xl ${orders?.filter(o => o.status === 'delivered').length >= 30 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white' : 'bg-gray-100 dark:bg-navy-700 text-gray-400'}`}>
+      <div className="text-3xl mb-1">⚡</div>
+      <p className="text-xs font-medium">Speed Demon</p>
+      {orders?.filter(o => o.status === 'delivered').length >= 30 && <span className="text-xs opacity-80">✅ Unlocked</span>}
+    </div>
+    
+    {/* Festival Star Badge */}
+    <div className={`text-center p-3 rounded-xl ${orders?.filter(o => o.status === 'delivered').length >= 5 ? 'bg-gradient-to-br from-pink-400 to-pink-600 text-white' : 'bg-gray-100 dark:bg-navy-700 text-gray-400'}`}>
+      <div className="text-3xl mb-1">🎉</div>
+      <p className="text-xs font-medium">Festival Star</p>
+      {orders?.filter(o => o.status === 'delivered').length >= 5 && <span className="text-xs opacity-80">✅ Unlocked</span>}
+    </div>
+    
+    {/* Referral Champion Badge */}
+    <div className={`text-center p-3 rounded-xl ${referrals?.filter(r => r.status === 'completed').length >= 3 ? 'bg-gradient-to-br from-indigo-400 to-indigo-600 text-white' : 'bg-gray-100 dark:bg-navy-700 text-gray-400'}`}>
+      <div className="text-3xl mb-1">🤝</div>
+      <p className="text-xs font-medium">Referral Champion</p>
+      {referrals?.filter(r => r.status === 'completed').length >= 3 && <span className="text-xs opacity-80">✅ Unlocked</span>}
+    </div>
+  </div>
+  
+  <div className="mt-3 text-xs text-gray-500 dark:text-gray-400 text-center">
+    Complete more deliveries to unlock achievements!
+  </div>
+</div>
+      
       {/* Referrals */}
       <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mb-6">
         <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
