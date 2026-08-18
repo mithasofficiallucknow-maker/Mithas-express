@@ -2392,7 +2392,94 @@ function CODLimitView({ orders }: any) {
   );
     }
 
-// Add after CODLimitView
+// ============================================
+// DELIVERY HISTORY - FEATURE 30
+// ============================================
+
+function DeliveryHistoryView({ orders }: any) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  const filteredOrders = orders?.filter((order: any) => {
+    const matchesSearch = 
+      order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.vendorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.productName?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  }) || [];
+
+  const deliveredOrders = filteredOrders.filter((o: any) => o.status === 'delivered');
+
+  return (
+    <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+      <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+        📦 Delivery History
+      </h2>
+
+      {/* Search & Filters */}
+      <div className="flex flex-col md:flex-row gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search by order, customer, vendor..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-navy-700 rounded-lg bg-white dark:bg-navy-700 text-navy-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="px-4 py-2 border border-gray-200 dark:border-navy-700 rounded-lg bg-white dark:bg-navy-700 text-navy-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+        >
+          <option value="all">All Status</option>
+          <option value="delivered">✅ Delivered</option>
+          <option value="cancelled">❌ Cancelled</option>
+          <option value="failed">⚠️ Failed</option>
+        </select>
+      </div>
+
+      {deliveredOrders.length === 0 ? (
+        <div className="text-center py-8">
+          <Package className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+          <p className="text-gray-500 dark:text-gray-400">No delivery history found</p>
+        </div>
+      ) : (
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {deliveredOrders.map((order: any) => (
+            <div key={order.id} className="flex flex-col md:flex-row md:items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-600 transition">
+              <div>
+                <p className="font-medium text-navy-800 dark:text-white">{order.orderNumber}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {order.customerName} • {order.vendorName}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {order.productName} x{order.quantity} • ₹{order.totalAmount}
+                </p>
+              </div>
+              <div className="text-right mt-2 md:mt-0">
+                <p className="text-sm font-medium text-teal-600">₹{order.distance * 6 + 12}</p>
+                <span className="text-xs text-green-600">
+                  {order.deliveredAt?.toDate?.()?.toLocaleDateString() || 'Unknown date'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+  // ============================================
+// REFERRAL PROGRAM - FEATURE 31
+// ============================================
+
 function ReferralView({ partner, referrals }: any) {
   const [referralCode, setReferralCode] = useState(partner?.referralCode || '');
   const [copied, setCopied] = useState(false);
@@ -2412,7 +2499,7 @@ function ReferralView({ partner, referrals }: any) {
     <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
-          Refer & Earn
+          🤝 Refer & Earn
         </h2>
         <button
           onClick={() => setShowReferralModal(true)}
@@ -2479,9 +2566,9 @@ function ReferralView({ partner, referrals }: any) {
       {/* Referral Modal */}
       {showReferralModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full">
+          <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full animate-scaleIn">
             <h3 className="text-xl font-bold text-navy-800 dark:text-white mb-4">
-              Invite a Friend
+              🎉 Invite a Friend
             </h3>
             <div className="space-y-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -2496,7 +2583,7 @@ function ReferralView({ partner, referrals }: any) {
                 onClick={handleCopyCode}
                 className="w-full p-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
               >
-                {copied ? 'Copied!' : 'Copy Referral Code'}
+                {copied ? '✅ Copied!' : '📋 Copy Referral Code'}
               </button>
               <button
                 onClick={() => setShowReferralModal(false)}
@@ -2510,88 +2597,8 @@ function ReferralView({ partner, referrals }: any) {
       )}
     </div>
   );
-        }
-
-// Add after ReferralView
-function DeliveryHistoryView({ orders }: any) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-
-  const filteredOrders = orders?.filter((order: any) => {
-    const matchesSearch = 
-      order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.vendorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.productName?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  }) || [];
-
-  const deliveredOrders = filteredOrders.filter((o: any) => o.status === 'delivered');
-
-  return (
-    <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
-        Delivery History
-      </h2>
-
-      {/* Search & Filters */}
-      <div className="flex flex-col md:flex-row gap-3 mb-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by order, customer, vendor..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-navy-700 rounded-lg bg-white dark:bg-navy-700 text-navy-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-200 dark:border-navy-700 rounded-lg bg-white dark:bg-navy-700 text-navy-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-        >
-          <option value="all">All Status</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
-          <option value="failed">Failed</option>
-        </select>
-      </div>
-
-      {deliveredOrders.length === 0 ? (
-        <div className="text-center py-8">
-          <Package className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-          <p className="text-gray-500 dark:text-gray-400">No delivery history found</p>
-        </div>
-      ) : (
-        <div className="space-y-3 max-h-96 overflow-y-auto">
-          {deliveredOrders.map((order: any) => (
-            <div key={order.id} className="flex flex-col md:flex-row md:items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
-              <div>
-                <p className="font-medium text-navy-800 dark:text-white">{order.orderNumber}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {order.customerName} • {order.vendorName}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {order.productName} x{order.quantity} • ₹{order.totalAmount}
-                </p>
-              </div>
-              <div className="text-right mt-2 md:mt-0">
-                <p className="text-sm text-teal-600">₹{order.distance * 6 + 12}</p>
-                <span className="text-xs text-green-600">
-                  {order.deliveredAt?.toDate?.()?.toLocaleDateString() || 'Unknown date'}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-      }
+}
+  
 
 // ============================================
 // 13. PROFILE VIEW
