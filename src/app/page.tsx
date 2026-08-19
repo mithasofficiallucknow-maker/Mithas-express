@@ -1187,20 +1187,20 @@ return (
               // DASHBOARD (Logged In)
               <>
                 {activeTab === "Home" && (
-                  <DashboardHome
-                    user={user}
-                    partner={partner}
-                    orders={orders}
-                    earnings={earnings}
-                    isOnline={isOnline}
-                    setIsOnline={setIsOnline}
-                    notifications={notifications}
-                    onViewOrder={(order) => {
-                      setSelectedOrder(order);
-                      setShowOrderDetails(true);
-                    }}
-                  />
-                )}
+  <DashboardHome
+    user={user}
+    partner={partner}
+    orders={orders}   // ← YEH HONA CHAHIYE
+    earnings={earnings}
+    isOnline={isOnline}
+    setIsOnline={setIsOnline}
+    notifications={notifications}
+    onViewOrder={(order) => {
+      setSelectedOrder(order);
+      setShowOrderDetails(true);
+    }}
+  />
+)}
 
                 {activeTab === "Orders" && (
   <OrdersView
