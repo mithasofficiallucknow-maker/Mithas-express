@@ -1261,6 +1261,7 @@ return (
                     referrals={referrals}
                     achievements={achievements}
                     fraudAlerts={fraudAlerts}
+                    orders={orders} 
                   />
                 )}
 
@@ -2266,7 +2267,7 @@ function EarningsView({ earnings, orders, partner }: any) {
     </div>
     
     <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 rounded-xl p-4 text-center">
-      <div className="text-3xl mb-2">💝</div>
+      <div className="text-3xl mb-2">💖</div>
       <p className="font-semibold text-navy-800 dark:text-white">Customer Tips</p>
       <p className="text-2xl font-bold text-green-600">₹{Math.floor(Math.random() * 100)}</p>
       <p className="text-xs text-gray-500">From happy customers</p>
@@ -2723,7 +2724,7 @@ function ReferralView({ partner, referrals }: any) {
 // 13. PROFILE VIEW
 // ============================================
 
-function ProfileView({ user, partner, onUpdate, referrals, achievements, fraudAlerts }: any) {
+function ProfileView({ user, partner, onUpdate, referrals, achievements, fraudAlerts, orders }: any) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     name: partner?.name || "",
