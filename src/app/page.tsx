@@ -365,113 +365,113 @@ function Header({
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-            >
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+<div className="hidden md:flex items-center gap-4">
+  <button
+    onClick={() => setDarkMode(!darkMode)}
+    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+  >
+    {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+  </button>
 
-            <button
-              onClick={() => setLanguage(language === "en" ? "hi" : "en")}
-              className="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-            >
-              <Globe size={18} />
-              <span className="text-sm font-medium">{language === "en" ? "EN" : "हिं"}</span>
-            </button>
+  <button
+    onClick={() => setLanguage(language === "en" ? "hi" : "en")}
+    className="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+  >
+    <Globe size={18} />
+    <span className="text-sm font-medium">{language === "en" ? "EN" : "हिं"}</span>
+  </button>
 
-            {user ? (
-              <>
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-                >
-                  <Bell size={20} />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </span>
-                  )}
-                </button>
+  {user ? (
+    <>
+      <button
+        onClick={() => setShowNotifications(!showNotifications)}
+        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+      >
+        <Bell size={20} />
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+      </button>
 
-                <div className="flex items-center gap-3">
-                  <div className="text-sm text-right">
-                    <p className="font-medium">{user.displayName || "Partner"}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {partner?.status || "Pending"}
-                    </p>
-                  </div>
-                  <button
-                    onClick={onLogout}
-                    className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                  >
-                    Logout
+      <div className="flex items-center gap-3">
+        <div className="text-sm text-right">
+          <p className="font-medium">{user.displayName || "Partner"}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {partner?.status || "Pending"}
+          </p>
+        </div>
+        <button
+          onClick={onLogout}
+          className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+        >
+          Logout
+        </button>
+      </div>
+    </>
+  ) : (
+    <>
+      <button
+        onClick={onOpenLogin}
+        className="px-4 py-2 text-sm font-medium text-navy-700 dark:text-white hover:bg-gray-100 dark:hover:bg-navy-700 rounded-lg transition"
+      >
+        Login
+      </button>
+      <button className="px-4 py-2 text-sm font-medium bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition">
+        Join Now
+      </button>
+
+      {/* SUPPORT BUTTON - Ab Fragment ke andar sahi jagah par hai */}
+      <button
+        onClick={() => {
+          const supportModal = document.createElement('div');
+          supportModal.innerHTML = `
+            <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+              <div class="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full animate-scaleIn">
+                <div class="flex justify-between items-center mb-4">
+                  <h2 class="text-xl font-bold text-navy-800 dark:text-white">📞 Support</h2>
+                  <button onclick="this.closest('.fixed').remove()" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                   </button>
                 </div>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={onOpenLogin}
-                  className="px-4 py-2 text-sm font-medium text-navy-700 dark:text-white hover:bg-gray-100 dark:hover:bg-navy-700 rounded-lg transition"
-                >
-                  Login
-                </button>
-                <button className="px-4 py-2 text-sm font-medium bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition">
-                  Join Now
-                </button>
-              </>
-      {/* SUPPORT BUTTON - FEATURE 49 */}
-<button
-  onClick={() => {
-    // Open support modal
-    const supportModal = document.createElement('div');
-    supportModal.innerHTML = `
-      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div class="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full animate-scaleIn">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-navy-800 dark:text-white">📞 Support</h2>
-            <button onclick="this.closest('.fixed').remove()" class="p-2 hover:bg-gray-100 rounded-lg">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div class="space-y-3">
-            <a href="tel:+919999999999" class="flex items-center gap-3 p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg hover:bg-teal-100 transition">
-              <PhoneCall class="w-5 h-5 text-teal-600" />
-              <div>
-                <p class="font-medium text-navy-800 dark:text-white">Call Support</p>
-                <p class="text-xs text-gray-500">24/7 helpline</p>
+                <div class="space-y-3">
+                  <a href="tel:+919999999999" class="flex items-center gap-3 p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg hover:bg-teal-100 transition">
+                    <span class="text-xl">📞</span>
+                    <div>
+                      <p class="font-medium text-navy-800 dark:text-white">Call Support</p>
+                      <p class="text-xs text-gray-500">24/7 helpline</p>
+                    </div>
+                  </a>
+                  <button class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 transition w-full text-left">
+                    <span class="text-xl">💬</span>
+                    <div>
+                      <p class="font-medium text-navy-800 dark:text-white">Live Chat</p>
+                      <p class="text-xs text-gray-500">Chat with support</p>
+                    </div>
+                  </button>
+                  <button class="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 transition w-full text-left">
+                    <span class="text-xl">⚠️</span>
+                    <div>
+                      <p class="font-medium text-red-800 dark:text-red-300">SOS Emergency</p>
+                      <p class="text-xs text-red-600 dark:text-red-400">Immediate help</p>
+                    </div>
+                  </button>
+                </div>
               </div>
-            </a>
-            <button class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 transition w-full text-left">
-              <MessageCircle class="w-5 h-5 text-blue-600" />
-              <div>
-                <p class="font-medium text-navy-800 dark:text-white">Live Chat</p>
-                <p class="text-xs text-gray-500">Chat with support</p>
-              </div>
-            </button>
-            <button class="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 transition w-full text-left">
-              <AlertTriangle class="w-5 h-5 text-red-600" />
-              <div>
-                <p class="font-medium text-red-800 dark:text-red-300">SOS Emergency</p>
-                <p class="text-xs text-red-600 dark:text-red-400">Immediate help</p>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(supportModal);
-  }}
-  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
->
-  <Headphones className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-</button>
-            )}
-          </div>
+            </div>
+          `;
+          document.body.appendChild(supportModal);
+        }}
+        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+      >
+        <Headphones className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+      </button>
+    </>
+  )}
+</div>
 
           {/* Mobile Menu Button */}
           <button
