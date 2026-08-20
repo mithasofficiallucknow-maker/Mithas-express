@@ -2377,8 +2377,8 @@ const handleUpload = async () => {
     View Details
   </button>
 </div>
-        
-      {/* Proof Upload Modal */}
+
+              {/* Proof Upload Modal */}
       {showProofUpload && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full">
@@ -2419,9 +2419,8 @@ const handleUpload = async () => {
       )}
     </div>
   );
-      }
-                
-      
+}
+
 // ============================================
 // 11. SHIFTS VIEW
 // ============================================
