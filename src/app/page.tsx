@@ -2146,6 +2146,43 @@ function ShiftsView({ SHIFT_SLOTS, onBookShift, selectedShift, user }: any) {
 // ============================================
 
 function EarningsView({ earnings, orders, partner }: any) {
+  
+{/* REWARDS & INCENTIVES - FEATURES 33-37 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+  <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+    🎁 Rewards & Incentives
+  </h2>
+  
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-900/30 rounded-xl p-4 text-center">
+      <div className="text-3xl mb-2">🏅</div>
+      <p className="font-semibold text-navy-800 dark:text-white">Performance</p>
+      <p className="text-2xl font-bold text-yellow-600">₹{orders?.filter(o => o.status === 'delivered').length * 5 || 0}</p>
+      <p className="text-xs text-gray-500">₹5 per delivery</p>
+    </div>
+    
+    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 rounded-xl p-4 text-center">
+      <div className="text-3xl mb-2">📅</div>
+      <p className="font-semibold text-navy-800 dark:text-white">Monthly Rewards</p>
+      <p className="text-2xl font-bold text-purple-600">₹{orders?.filter(o => o.status === 'delivered').length >= 50 ? 500 : 0}</p>
+      <p className="text-xs text-gray-500">50+ deliveries/month</p>
+    </div>
+    
+    <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-900/30 rounded-xl p-4 text-center">
+      <div className="text-3xl mb-2">🎊</div>
+      <p className="font-semibold text-navy-800 dark:text-white">Festival Bonus</p>
+      <p className="text-2xl font-bold text-pink-600">₹200</p>
+      <p className="text-xs text-gray-500">Festival season</p>
+    </div>
+    
+    <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 rounded-xl p-4 text-center">
+      <div className="text-3xl mb-2">💖</div>
+      <p className="font-semibold text-navy-800 dark:text-white">Customer Tips</p>
+      <p className="text-2xl font-bold text-green-600">₹{Math.floor(Math.random() * 100)}</p>
+      <p className="text-xs text-gray-500">From happy customers</p>
+    </div>
+  </div>
+</div>
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <h1 className="text-2xl md:text-3xl font-bold text-navy-800 dark:text-white mb-6">Earnings</h1>
@@ -2238,42 +2275,6 @@ function EarningsView({ earnings, orders, partner }: any) {
   );
 }
 
-{/* REWARDS & INCENTIVES - FEATURES 33-37 */}
-<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
-  <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
-    🎁 Rewards & Incentives
-  </h2>
-  
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-900/30 rounded-xl p-4 text-center">
-      <div className="text-3xl mb-2">🏅</div>
-      <p className="font-semibold text-navy-800 dark:text-white">Performance</p>
-      <p className="text-2xl font-bold text-yellow-600">₹{orders?.filter(o => o.status === 'delivered').length * 5 || 0}</p>
-      <p className="text-xs text-gray-500">₹5 per delivery</p>
-    </div>
-    
-    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 rounded-xl p-4 text-center">
-      <div className="text-3xl mb-2">📅</div>
-      <p className="font-semibold text-navy-800 dark:text-white">Monthly Rewards</p>
-      <p className="text-2xl font-bold text-purple-600">₹{orders?.filter(o => o.status === 'delivered').length >= 50 ? 500 : 0}</p>
-      <p className="text-xs text-gray-500">50+ deliveries/month</p>
-    </div>
-    
-    <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-900/30 rounded-xl p-4 text-center">
-      <div className="text-3xl mb-2">🎊</div>
-      <p className="font-semibold text-navy-800 dark:text-white">Festival Bonus</p>
-      <p className="text-2xl font-bold text-pink-600">₹200</p>
-      <p className="text-xs text-gray-500">Festival season</p>
-    </div>
-    
-    <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 rounded-xl p-4 text-center">
-      <div className="text-3xl mb-2">💖</div>
-      <p className="font-semibold text-navy-800 dark:text-white">Customer Tips</p>
-      <p className="text-2xl font-bold text-green-600">₹{Math.floor(Math.random() * 100)}</p>
-      <p className="text-xs text-gray-500">From happy customers</p>
-    </div>
-  </div>
-</div>
 
 // Add after EarningsView component
 function OnboardingFeeView({ partner, onUpdate }: any) {
