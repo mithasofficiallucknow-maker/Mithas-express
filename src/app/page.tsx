@@ -2125,6 +2125,57 @@ function OrdersView({
         </div>
       </div>
 
+      {/* BULK ORDER VIEW - EXTRA FEATURE 4 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm mb-6">
+  <div className="flex flex-wrap items-center gap-4">
+    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quick Filters:</span>
+    <button 
+      onClick={() => setStatusFilter('assigned')}
+      className={`px-3 py-1 text-xs rounded-full ${
+        statusFilter === 'assigned' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+      }`}
+    >
+      🆕 New
+    </button>
+    <button 
+      onClick={() => setStatusFilter('accepted')}
+      className={`px-3 py-1 text-xs rounded-full ${
+        statusFilter === 'accepted' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+      }`}
+    >
+      ✅ Accepted
+    </button>
+    <button 
+      onClick={() => setStatusFilter('picked_up')}
+      className={`px-3 py-1 text-xs rounded-full ${
+        statusFilter === 'picked_up' ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+      }`}
+    >
+      📦 Picked Up
+    </button>
+    <button 
+      onClick={() => setStatusFilter('delivered')}
+      className={`px-3 py-1 text-xs rounded-full ${
+        statusFilter === 'delivered' ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+      }`}
+    >
+      ✅ Completed
+    </button>
+    <button 
+      onClick={() => setStatusFilter('all')}
+      className={`px-3 py-1 text-xs rounded-full ${
+        statusFilter === 'all' ? 'bg-gray-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+      }`}
+    >
+      📋 All
+    </button>
+    
+    <span className="text-xs text-gray-500 ml-auto">
+      {filteredOrders.length} orders
+    </span>
+  </div>
+</div>
+      
       {filteredOrders.length === 0 ? (
         <div className="text-center py-12">
           <Package className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
@@ -2180,6 +2231,36 @@ const handleUpload = async () => {
             </span>
           </div>
 
+          {/* ORDER PRIORITY TAGS - EXTRA FEATURE 5 */}
+<div className="flex items-center gap-2 flex-wrap">
+  <span className="font-bold text-navy-800 dark:text-white">{order.orderNumber}</span>
+  <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(order.status)}`}>
+    {order.status.replace('_', ' ').toUpperCase()}
+  </span>
+  
+  {/* Priority Tags */}
+  {order.totalAmount > 500 && (
+    <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full">
+      💎 VIP
+    </span>
+  )}
+  {order.distance < 2 && (
+    <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
+      ⚡ Express
+    </span>
+  )}
+  {order.customerNotes && (
+    <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">
+      📝 Note
+    </span>
+  )}
+  {order.paymentMode === 'COD' && (order.codAmount || order.totalAmount) > 300 && (
+    <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded-full">
+      💰 High COD
+    </span>
+  )}
+</div>
+          
           {/* Order details grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
             <p className="text-gray-600 dark:text-gray-400">
@@ -2225,61 +2306,78 @@ const handleUpload = async () => {
           )}
         </div>
 
+        {/* LIVE ORDER TRACKING - EXTRA FEATURE 1 */}
+<div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="font-medium text-navy-800 dark:text-white">📍 Live Tracking</h3>
+    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full animate-pulse">🟢 Live</span>
+  </div>
+  
+  <div className="bg-gray-100 dark:bg-navy-700 rounded-lg p-4 h-32 flex items-center justify-center">
+    <div className="text-center">
+      <Navigation className="w-8 h-8 text-teal-600 mx-auto mb-2 animate-pulse" />
+      <p className="text-sm text-gray-500">Live location sharing</p>
+      <p className="text-xs text-gray-400">Customer can see your location</p>
+    </div>
+  </div>
+  
+  <div className="flex items-center gap-2 mt-2">
+    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+    <span className="text-xs text-green-600">Sharing live location</span>
+  </div>
+</div>
+        
         {/* Action buttons */}
-        <div className="flex flex-wrap gap-2">
-          {order.status === "assigned" && (
-            <button
-              onClick={() => onAccept(order.id)}
-              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
-            >
-              Accept
-            </button>
-          )}
+<div className="flex flex-wrap gap-2">
+  {order.status === "assigned" && (
+    <>
+      <button
+        onClick={() => onAccept(order.id)}
+        className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+      >
+        Accept
+      </button>
+      <button
+        onClick={() => {
+          const reason = prompt('Reason for declining this order?\n\n1. Too far\n2. Already busy\n3. Vehicle issue\n4. Other');
+          if (reason !== null) {
+            onDecline(order.id);
+            alert(`✅ Order declined. Reason: ${reason || 'Not specified'}`);
+          }
+        }}
+        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+      >
+        Decline
+      </button>
+    </>
+  )}
 
-          {order.status === "accepted" && (
-  <>
+  {order.status === "accepted" && (
     <button
-      onClick={() => onGoingToPickup(order.id)}
-      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+      onClick={() => onPickup(order.id)}
+      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
     >
-      Going to Pickup
+      Pickup
     </button>
+  )}
+
+  {(order.status === "picked_up" || order.status === "out_for_delivery") && (
     <button
-      onClick={() => onDecline(order.id)}
-      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+      onClick={() => setShowProofUpload(true)}
+      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
     >
-      Decline
+      Deliver
     </button>
-  </>
-)}
+  )}
 
-{order.status === "going_to_pickup" && (
   <button
-    onClick={() => onPickup(order.id)}
-    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+    onClick={() => onView(order)}
+    className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-navy-600 transition"
   >
-    Picked Up
+    View Details
   </button>
-)}
-
-{order.status === "picked_up" && (
-  <button
-    onClick={() => onOutForDelivery(order.id)}
-    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-  >
-    Out for Delivery
-  </button>
-)}
-          <button
-            onClick={() => onView(order)}
-            className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-navy-600 transition"
-          >
-            View Details
-          </button>
-        </div>
-      </div>
-
-      
+</div>
+        
       {/* Proof Upload Modal */}
       {showProofUpload && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
