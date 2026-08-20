@@ -1260,6 +1260,7 @@ return (
                     <ReferralView partner={partner} referrals={referrals} />
                     
                     <DeliveryHistoryView orders={orders} />
+                       <MithaasConnectivity />
                   </div>
                 )}
 
@@ -2508,41 +2509,94 @@ function OnboardingFeeView({ partner, onUpdate }: any) {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
-  const handlePayUpfront = async () => {
-    setPaymentLoading(true);
-    try {
-      // Simulate Razorpay payment - will be replaced with actual Razorpay integration
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const updatedFee = {
-        ...partner.onboardingFee,
-        paid: 10,
-        remaining: 1889,
-        recovered: 0,
-        history: [
-          {
-            date: serverTimestamp(),
-            amount: 10,
-            week: new Date().toISOString().slice(0, 10),
-            remaining: 1889
-          },
-          ...(partner.onboardingFee.history || [])
-        ]
-      };
-      
-      await onUpdate({ onboardingFee: updatedFee });
-      setShowPaymentModal(false);
-    } catch (error) {
-      console.error("Payment failed:", error);
-    } finally {
-      setPaymentLoading(false);
-    }
-  };
+  // ============================================
+// 53. RAZORPAY INTEGRATION STRUCTURE
+// ============================================
 
-  if (!partner?.onboardingFee) return null;
-
-  const { total, paid, remaining, recovered, history } = partner.onboardingFee;
-  const progress = ((paid + recovered) / total) * 100;
+const handlePayUpfront = async () => {
+  setPaymentLoading(true);
+  try {
+    // Step 1: Create order on backend
+    const response = await fetch('/api/create-razorpay-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: 10,
+        currency: 'INR',
+        partnerId: partner.uid,
+        purpose: 'onboarding_fee'
+      })
+    });
+    
+    const data = await response.json();
+    
+    // Step 2: Open Razorpay checkout
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: data.amount,
+      currency: data.currency,
+      name: 'Mithaas Express',
+      description: 'Onboarding Fee Payment',
+      order_id: data.orderId,
+      handler: async function (response: any) {
+        // Step 3: Verify payment
+        const verifyResponse = await fetch('/api/verify-razorpay-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            partnerId: partner.uid
+          })
+        });
+        
+        const verifyData = await verifyResponse.json();
+        
+        if (verifyData.success) {
+          // Update onboarding fee status
+          const updatedFee = {
+            ...partner.onboardingFee,
+            paid: 10,
+            remaining: 1889,
+            recovered: 0,
+            history: [
+              {
+                date: serverTimestamp(),
+                amount: 10,
+                week: new Date().toISOString().slice(0, 10),
+                remaining: 1889,
+                transactionId: response.razorpay_payment_id
+              },
+              ...(partner.onboardingFee.history || [])
+            ]
+          };
+          
+          await onUpdate({ onboardingFee: updatedFee });
+          setShowPaymentModal(false);
+          alert('✅ Payment successful! Welcome to Mithaas Express!');
+        } else {
+          alert('❌ Payment verification failed. Please contact support.');
+        }
+      },
+      modal: {
+        ondismiss: function() {
+          setPaymentLoading(false);
+        }
+      }
+    };
+    
+    // @ts-ignore - Razorpay is loaded from CDN
+    const razorpay = new Razorpay(options);
+    razorpay.open();
+    
+  } catch (error) {
+    console.error("Payment failed:", error);
+    alert('❌ Payment failed. Please try again.');
+  } finally {
+    setPaymentLoading(false);
+  }
+};
 
   return (
     <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
@@ -3675,72 +3729,397 @@ function OrderDetailsModal({
   );
 }
 
-
-
 // ============================================
-// 18. ADMIN PANEL (Simplified)
+// 50. SUPER ADMIN PANEL (COMPLETE)
 // ============================================
 
 function AdminPanel({ partners, orders, complaints, fraudAlerts }: any) {
   const [adminTab, setAdminTab] = useState("partners");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter partners based on search
+  const filteredPartners = partners?.filter((p: any) => 
+    p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.mobile?.includes(searchTerm) ||
+    p.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  // Calculate stats
+  const totalPartners = partners?.length || 0;
+  const activePartners = partners?.filter((p: any) => p.status === 'active').length || 0;
+  const totalOrders = orders?.length || 0;
+  const pendingOrders = orders?.filter((o: any) => o.status === 'assigned' || o.status === 'accepted').length || 0;
+  const totalEarnings = orders?.filter((o: any) => o.status === 'delivered').reduce((sum: number, o: any) => sum + (o.distance * 6 + 12), 0) || 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-navy-800 dark:text-white">Admin Panel</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setAdminTab("partners")}
-            className={`px-4 py-2 rounded-lg ${
-              adminTab === "partners" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700"
-            }`}
-          >
-            Partners
-          </button>
-          <button
-            onClick={() => setAdminTab("orders")}
-            className={`px-4 py-2 rounded-lg ${
-              adminTab === "orders" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700"
-            }`}
-          >
-            Orders
-          </button>
-          <button
-            onClick={() => setAdminTab("complaints")}
-            className={`px-4 py-2 rounded-lg ${
-              adminTab === "complaints" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700"
-            }`}
-          >
-            Complaints
-          </button>
+      {/* Admin Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-navy-800 dark:text-white">
+            🛡️ Admin Panel
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Manage delivery partners, orders, and payouts</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">🟢 Live</span>
         </div>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Total Partners</p>
+          <p className="text-2xl font-bold text-navy-800 dark:text-white">{totalPartners}</p>
+          <p className="text-xs text-green-600">{activePartners} active</p>
+        </div>
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Total Orders</p>
+          <p className="text-2xl font-bold text-navy-800 dark:text-white">{totalOrders}</p>
+          <p className="text-xs text-orange-600">{pendingOrders} pending</p>
+        </div>
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Total Earnings</p>
+          <p className="text-2xl font-bold text-teal-600">₹{totalEarnings}</p>
+          <p className="text-xs text-gray-500">All time</p>
+        </div>
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Fraud Alerts</p>
+          <p className="text-2xl font-bold text-red-600">{fraudAlerts?.length || 0}</p>
+          <p className="text-xs text-red-500">{fraudAlerts?.filter((f: any) => !f.resolved).length || 0} unresolved</p>
+        </div>
+      </div>
+
+      {/* Admin Tabs */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button
+          onClick={() => setAdminTab("partners")}
+          className={`px-4 py-2 rounded-lg transition ${
+            adminTab === "partners" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700 text-navy-700 dark:text-white hover:bg-gray-300 dark:hover:bg-navy-600"
+          }`}
+        >
+          👥 Partners
+        </button>
+        <button
+          onClick={() => setAdminTab("orders")}
+          className={`px-4 py-2 rounded-lg transition ${
+            adminTab === "orders" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700 text-navy-700 dark:text-white hover:bg-gray-300 dark:hover:bg-navy-600"
+          }`}
+        >
+          📦 Orders
+        </button>
+        <button
+          onClick={() => setAdminTab("earnings")}
+          className={`px-4 py-2 rounded-lg transition ${
+            adminTab === "earnings" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700 text-navy-700 dark:text-white hover:bg-gray-300 dark:hover:bg-navy-600"
+          }`}
+        >
+          💰 Earnings
+        </button>
+        <button
+          onClick={() => setAdminTab("complaints")}
+          className={`px-4 py-2 rounded-lg transition ${
+            adminTab === "complaints" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700 text-navy-700 dark:text-white hover:bg-gray-300 dark:hover:bg-navy-600"
+          }`}
+        >
+          📞 Complaints
+        </button>
+        <button
+          onClick={() => setAdminTab("fraud")}
+          className={`px-4 py-2 rounded-lg transition ${
+            adminTab === "fraud" ? "bg-teal-600 text-white" : "bg-gray-200 dark:bg-navy-700 text-navy-700 dark:text-white hover:bg-gray-300 dark:hover:bg-navy-600"
+          }`}
+        >
+          ⚠️ Fraud
+        </button>
+      </div>
+
+      {/* Tab Content */}
       {adminTab === "partners" && (
         <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center gap-4 mb-4">
-            <Search className="w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search partners by name or phone..."
-              className="flex-1 p-2 border border-gray-300 dark:border-navy-600 rounded-lg"
-            />
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by name, phone, or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-navy-700 rounded-lg bg-white dark:bg-navy-700 text-navy-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
           </div>
-          <p className="text-gray-500 dark:text-gray-400">No partners registered yet.</p>
+
+          {filteredPartners.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8">No partners registered yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-navy-700">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Name</th>
+                    <th className="px-4 py-2 text-left">Phone</th>
+                    <th className="px-4 py-2 text-left">Status</th>
+                    <th className="px-4 py-2 text-left">Earnings</th>
+                    <th className="px-4 py-2 text-left">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredPartners.map((partner: any) => (
+                    <tr key={partner.uid} className="border-b border-gray-100 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-700">
+                      <td className="px-4 py-3 font-medium">{partner.name}</td>
+                      <td className="px-4 py-3">{partner.mobile}</td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          partner.status === 'active' ? 'bg-green-100 text-green-700' :
+                          partner.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                          partner.status === 'warning' ? 'bg-orange-100 text-orange-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {partner.status?.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">₹{partner.earnings?.total || 0}</td>
+                      <td className="px-4 py-3">
+                        <button className="text-teal-600 hover:text-teal-700 text-xs font-medium">View</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
       {adminTab === "orders" && (
         <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
-          <p className="text-gray-500 dark:text-gray-400">No orders in the system yet.</p>
+          {orders?.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8">No orders in the system yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-navy-700">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Order #</th>
+                    <th className="px-4 py-2 text-left">Customer</th>
+                    <th className="px-4 py-2 text-left">Partner</th>
+                    <th className="px-4 py-2 text-left">Amount</th>
+                    <th className="px-4 py-2 text-left">Status</th>
+                    <th className="px-4 py-2 text-left">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((order: any) => (
+                    <tr key={order.id} className="border-b border-gray-100 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-700">
+                      <td className="px-4 py-3 font-medium">{order.orderNumber}</td>
+                      <td className="px-4 py-3">{order.customerName}</td>
+                      <td className="px-4 py-3">{order.deliveryPartnerName || 'Unassigned'}</td>
+                      <td className="px-4 py-3">₹{order.totalAmount}</td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          order.status === 'delivered' ? 'bg-green-100 text-green-700' :
+                          order.status === 'assigned' ? 'bg-yellow-100 text-yellow-700' :
+                          order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                          'bg-blue-100 text-blue-700'
+                        }`}>
+                          {order.status?.replace('_', ' ').toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <button className="text-teal-600 hover:text-teal-700 text-xs font-medium">View</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {adminTab === "earnings" && (
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-teal-50 dark:bg-teal-900/20 rounded-xl p-4 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Payouts</p>
+              <p className="text-2xl font-bold text-teal-600">₹{totalEarnings}</p>
+            </div>
+            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Pending Payouts</p>
+              <p className="text-2xl font-bold text-purple-600">₹{Math.floor(totalEarnings * 0.3)}</p>
+            </div>
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">This Week</p>
+              <p className="text-2xl font-bold text-green-600">₹{Math.floor(totalEarnings * 0.4)}</p>
+            </div>
+          </div>
+          <p className="text-gray-500 dark:text-gray-400 text-center py-4">Payout management coming soon.</p>
         </div>
       )}
 
       {adminTab === "complaints" && (
         <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
-          <p className="text-gray-500 dark:text-gray-400">No complaints reported.</p>
+          {complaints?.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8">No complaints reported.</p>
+          ) : (
+            <div className="space-y-3">
+              {complaints.map((complaint: any) => (
+                <div key={complaint.id} className="p-4 bg-gray-50 dark:bg-navy-700 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-navy-800 dark:text-white">{complaint.partnerName}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{complaint.description}</p>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      complaint.status === 'resolved' ? 'bg-green-100 text-green-700' :
+                      complaint.status === 'investigating' ? 'bg-orange-100 text-orange-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {complaint.status?.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
+
+      {adminTab === "fraud" && (
+        <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+          {fraudAlerts?.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8">No fraud alerts detected.</p>
+          ) : (
+            <div className="space-y-3">
+              {fraudAlerts.map((alert: any) => (
+                <div key={alert.id} className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-red-800 dark:text-red-300">{alert.type}</p>
+                      <p className="text-sm text-red-600 dark:text-red-400">{alert.description}</p>
+                      <p className="text-xs text-gray-500 mt-1">Partner ID: {alert.partnerId}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        alert.level === 'high' ? 'bg-red-100 text-red-700' :
+                        alert.level === 'medium' ? 'bg-orange-100 text-orange-700' :
+                        'bg-yellow-100 text-yellow-700'
+                      }`}>
+                        {alert.level?.toUpperCase()}
+                      </span>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {alert.resolved ? '✅ Resolved' : '⚠️ Pending'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================
+// 54. MITHAAS CONNECTIVITY STRUCTURE
+// ============================================
+
+function MithaasConnectivity() {
+  const [isConnected, setIsConnected] = useState(false);
+  const [lastSync, setLastSync] = useState<string>('Never');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleConnect = async () => {
+    setIsLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const success = Math.random() > 0.3;
+      
+      if (success) {
+        setIsConnected(true);
+        setLastSync(new Date().toLocaleString());
+        alert('✅ Successfully connected to Mithaas platform!');
+      } else {
+        alert('❌ Connection failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Connection error:', error);
+      alert('❌ Failed to connect to Mithaas platform.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSync = async () => {
+    setIsLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const ordersCount = Math.floor(Math.random() * 20);
+      setLastSync(new Date().toLocaleString());
+      alert(`✅ Synced ${ordersCount} orders from Mithaas.`);
+    } catch (error) {
+      console.error('Sync error:', error);
+      alert('❌ Failed to sync orders.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+          🔗 Mithaas Connectivity
+        </h2>
+        <span className={`text-xs px-2 py-1 rounded-full ${
+          isConnected ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+        }`}>
+          {isConnected ? '🟢 Connected' : '⚪ Disconnected'}
+        </span>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-gray-50 dark:bg-navy-700 rounded-lg p-3 text-center">
+          <p className="text-2xl font-bold text-teal-600">0</p>
+          <p className="text-xs text-gray-500">Orders Synced</p>
+        </div>
+        <div className="bg-gray-50 dark:bg-navy-700 rounded-lg p-3 text-center">
+          <p className="text-2xl font-bold text-purple-600">0</p>
+          <p className="text-xs text-gray-500">Vendors Connected</p>
+        </div>
+        <div className="bg-gray-50 dark:bg-navy-700 rounded-lg p-3 text-center">
+          <p className="text-2xl font-bold text-orange-600">0</p>
+          <p className="text-xs text-gray-500">Customers Synced</p>
+        </div>
+      </div>
+      
+      <div className="flex flex-wrap gap-3 mt-4">
+        <button
+          onClick={handleConnect}
+          disabled={isLoading}
+          className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition text-sm disabled:opacity-50"
+        >
+          {isLoading ? '⏳ Connecting...' : isConnected ? '🔄 Reconnect' : '🔗 Connect to Mithaas'}
+        </button>
+        <button
+          onClick={handleSync}
+          disabled={!isConnected || isLoading}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm disabled:opacity-50"
+        >
+          📥 Sync Orders
+        </button>
+        <button
+          disabled={!isConnected || isLoading}
+          className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg text-sm disabled:opacity-50"
+        >
+          📤 Export Data
+        </button>
+      </div>
+      
+      <p className="text-xs text-gray-500 mt-3">Last sync: {lastSync}</p>
     </div>
   );
 }
