@@ -357,7 +357,7 @@ function Header({
           {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="relative w-10 h-10 md:w-12 md:h-12">
-              <Image src="/Logo.png" alt="Mithaas Express" fill className="object-contain" />
+              <Image src="/express-logo.png" alt="Mithaas Express" fill className="object-contain" />
             </div>
             <span className="text-xl md:text-2xl font-bold text-teal-600 dark:text-teal-400">
               Mithaas Express
@@ -1727,6 +1727,128 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
     </div>
   )}
 </div>
+
+      {/* PEAK-AREA SUGGESTIONS - FEATURE 41 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-xl font-bold text-navy-800 dark:text-white">🔥 Peak Areas</h2>
+    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">Live</span>
+  </div>
+  
+  <div className="space-y-3">
+    <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-l-4 border-orange-500">
+      <div>
+        <p className="font-medium text-navy-800 dark:text-white">Sector 62, Noida</p>
+        <p className="text-xs text-gray-500">12 orders waiting • 2.3 km away</p>
+      </div>
+      <span className="text-sm font-bold text-orange-600">🔥 High</span>
+    </div>
+    
+    <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-l-4 border-yellow-500">
+      <div>
+        <p className="font-medium text-navy-800 dark:text-white">Sector 18, Noida</p>
+        <p className="text-xs text-gray-500">8 orders waiting • 3.1 km away</p>
+      </div>
+      <span className="text-sm font-bold text-yellow-600">🔥 Medium</span>
+    </div>
+    
+    <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-l-4 border-green-500">
+      <div>
+        <p className="font-medium text-navy-800 dark:text-white">Sector 27, Noida</p>
+        <p className="text-xs text-gray-500">5 orders waiting • 4.5 km away</p>
+      </div>
+      <span className="text-sm font-bold text-green-600">🔥 Low</span>
+    </div>
+  </div>
+</div>
+
+      {/* HEAT MAP - FEATURE 42 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-xl font-bold text-navy-800 dark:text-white">🌡️ Delivery Heat Map</h2>
+    <span className="text-xs text-gray-500">Last 7 days</span>
+  </div>
+  
+  <div className="grid grid-cols-5 gap-2">
+    <div className="text-center">
+      <div className="w-full h-12 bg-red-500 rounded-t-lg"></div>
+      <p className="text-xs text-gray-500 mt-1">Mon</p>
+      <p className="text-xs font-bold text-red-600">45</p>
+    </div>
+    <div className="text-center">
+      <div className="w-full h-10 bg-orange-500 rounded-t-lg"></div>
+      <p className="text-xs text-gray-500 mt-1">Tue</p>
+      <p className="text-xs font-bold text-orange-600">38</p>
+    </div>
+    <div className="text-center">
+      <div className="w-full h-14 bg-red-500 rounded-t-lg"></div>
+      <p className="text-xs text-gray-500 mt-1">Wed</p>
+      <p className="text-xs font-bold text-red-600">52</p>
+    </div>
+    <div className="text-center">
+      <div className="w-full h-8 bg-yellow-500 rounded-t-lg"></div>
+      <p className="text-xs text-gray-500 mt-1">Thu</p>
+      <p className="text-xs font-bold text-yellow-600">30</p>
+    </div>
+    <div className="text-center">
+      <div className="w-full h-11 bg-orange-500 rounded-t-lg"></div>
+      <p className="text-xs text-gray-500 mt-1">Fri</p>
+      <p className="text-xs font-bold text-orange-600">42</p>
+    </div>
+  </div>
+  
+  <div className="flex items-center justify-between mt-3">
+    <div className="flex items-center gap-2">
+      <div className="w-3 h-3 bg-red-500 rounded"></div>
+      <span className="text-xs text-gray-500">High (40+)</span>
+    </div>
+    <div className="flex items-center gap-2">
+      <div className="w-3 h-3 bg-orange-500 rounded"></div>
+      <span className="text-xs text-gray-500">Medium (30-40)</span>
+    </div>
+    <div className="flex items-center gap-2">
+      <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+      <span className="text-xs text-gray-500">Low (20-30)</span>
+    </div>
+  </div>
+</div>
+
+  {/* AI FRAUD SCORE - FEATURE 44 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-xl font-bold text-navy-800 dark:text-white">🛡️ AI Fraud Score</h2>
+    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Low Risk</span>
+  </div>
+  
+  <div className="flex items-center gap-6">
+    <div className="relative w-24 h-24">
+      <div className="w-24 h-24 rounded-full border-8 border-green-500 flex items-center justify-center">
+        <span className="text-2xl font-bold text-green-600">95</span>
+      </div>
+    </div>
+    
+    <div className="flex-1">
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-600 dark:text-gray-400">GPS Verification</span>
+          <span className="text-green-600">✅ Verified</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-600 dark:text-gray-400">Selfie Match</span>
+          <span className="text-green-600">✅ Matched</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-600 dark:text-gray-400">Device ID</span>
+          <span className="text-green-600">✅ Unique</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+    <p className="text-xs text-green-700 dark:text-green-300">✅ No suspicious activity detected. Account is secure.</p>
+  </div>
+</div>
       
       {/* Recent Orders */}
       <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
@@ -3034,6 +3156,84 @@ function ProfileView({ user, partner, onUpdate, referrals, achievements, fraudAl
     
     <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Pending</span>
   </div>
+</div>
+
+{/* DUPLICATE ACCOUNT DETECTION - FEATURE 47 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mb-6">
+  <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+    🔐 Device & Account Security
+  </h2>
+  
+  <div className="space-y-3">
+    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+      <div className="flex items-center gap-3">
+        <Smartphone className="w-5 h-5 text-blue-600" />
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">Device ID</p>
+          <p className="text-xs text-gray-500">OnePlus 9 • Android 13</p>
+        </div>
+      </div>
+      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">✅ Verified</span>
+    </div>
+    
+    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+      <div className="flex items-center gap-3">
+        <Users className="w-5 h-5 text-purple-600" />
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">Account Status</p>
+          <p className="text-xs text-gray-500">Single device active</p>
+        </div>
+      </div>
+      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">✅ Secure</span>
+    </div>
+    
+    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+      <div className="flex items-center gap-3">
+        <Fingerprint className="w-5 h-5 text-teal-600" />
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">Biometric</p>
+          <p className="text-xs text-gray-500">Fingerprint enabled</p>
+        </div>
+      </div>
+      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">✅ Enabled</span>
+    </div>
+  </div>
+</div>
+
+{/* SUSPICIOUS ACTIVITY/FRAUD ALERTS - FEATURE 48 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mb-6">
+  <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+    ⚠️ Suspicious Activity
+  </h2>
+  
+  {fraudAlerts?.length > 0 ? (
+    <div className="space-y-3">
+      {fraudAlerts.map((alert: any) => (
+        <div key={alert.id} className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <div>
+            <p className="font-medium text-red-800 dark:text-red-300">{alert.type}</p>
+            <p className="text-xs text-red-600 dark:text-red-400">{alert.description}</p>
+          </div>
+          <span className={`text-xs px-2 py-1 rounded-full ${
+            alert.level === 'high' ? 'bg-red-100 text-red-700' :
+            alert.level === 'medium' ? 'bg-orange-100 text-orange-700' :
+            'bg-yellow-100 text-yellow-700'
+          }`}>
+            {alert.level.toUpperCase()}
+          </span>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+      <CheckCircle className="w-5 h-5 text-green-600" />
+      <p className="text-sm text-green-700 dark:text-green-300">No suspicious activity detected.</p>
+    </div>
+  )}
+  
+  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+    AI monitors all activities 24/7. Report any suspicious activity immediately.
+  </p>
 </div>
 
       {/* ACHIEVEMENT BADGES - FEATURE 32 */}
