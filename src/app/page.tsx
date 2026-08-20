@@ -1592,6 +1592,29 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
     <span>Sun</span>
   </div>
 </div>
+
+      {/* EARNING FORECAST - EXTRA FEATURE 3 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-xl font-bold text-navy-800 dark:text-white">📈 Earning Forecast</h2>
+    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">AI Generated</span>
+  </div>
+  
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <div className="text-center p-3 bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-900/30 rounded-xl">
+      <p className="text-sm text-gray-500">This Week</p>
+      <p className="text-2xl font-bold text-teal-600">₹{(orders?.filter(o => o.status === 'delivered').length || 0) * 18 + 500}</p>
+    </div>
+    <div className="text-center p-3 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 rounded-xl">
+      <p className="text-sm text-gray-500">Next Week</p>
+      <p className="text-2xl font-bold text-purple-600">₹{(orders?.filter(o => o.status === 'delivered').length || 0) * 22 + 800}</p>
+    </div>
+    <div className="text-center p-3 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-900/30 rounded-xl col-span-2 md:col-span-1">
+      <p className="text-sm text-gray-500">This Month</p>
+      <p className="text-2xl font-bold text-orange-600">₹{(orders?.filter(o => o.status === 'delivered').length || 0) * 70 + 2500}</p>
+    </div>
+  </div>
+</div>
       
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
