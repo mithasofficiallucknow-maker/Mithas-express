@@ -1704,6 +1704,52 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
           change="+2%"
         />
       </div>
+
+      {/* EARNING MILESTONE CELEBRATION - EXTRA FEATURE 14 */}
+{(() => {
+  const totalEarnings = orders?.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (o.distance * 6 + 12), 0) || 0;
+  const milestones = [
+    { amount: 1000, emoji: '🎉', label: '₹1,000 Club' },
+    { amount: 5000, emoji: '🎊', label: '₹5,000 Club' },
+    { amount: 10000, emoji: '🏆', label: '₹10,000 Club' },
+    { amount: 25000, emoji: '👑', label: '₹25,000 Club' },
+    { amount: 50000, emoji: '💎', label: '₹50,000 Club' },
+  ];
+  
+  const achieved = milestones.filter(m => totalEarnings >= m.amount);
+  const next = milestones.find(m => totalEarnings < m.amount);
+  
+  if (achieved.length === 0) return null;
+  
+  return (
+    <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl p-6 shadow-sm mt-6 border-2 border-yellow-200 dark:border-yellow-800">
+      <div className="flex items-center gap-4">
+        <div className="text-4xl">{achieved[achieved.length - 1].emoji}</div>
+        <div className="flex-1">
+          <p className="font-bold text-navy-800 dark:text-white">
+            {achieved[achieved.length - 1].label} Achieved! 🎉
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Total Earnings: ₹{totalEarnings}
+          </p>
+          {next && (
+            <p className="text-xs text-gray-500">
+              Next milestone: {next.emoji} {next.label} (₹{next.amount})
+            </p>
+          )}
+        </div>
+        <div className="text-right">
+          <div className="w-16 h-16 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-pulse opacity-20"></div>
+            <div className="absolute inset-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-2xl">
+              🎯
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+})()}
       
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -1769,6 +1815,30 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
   <button className="mt-4 w-full py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition">
     View Full Route
   </button>
+  {/* INTELLIGENT ROUTE SUGGESTION - EXTRA FEATURE 12 */}
+<div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-4 mt-3">
+  <div className="flex items-start gap-3">
+    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white text-lg">
+      🤖
+    </div>
+    <div className="flex-1">
+      <p className="text-sm font-medium text-navy-800 dark:text-white">AI Route Suggestion</p>
+      <p className="text-xs text-gray-600 dark:text-gray-400">
+        🚦 Avoid Sector 18 - heavy traffic expected. 
+        Take Sector 62 route instead. 
+        <span className="text-green-600 font-medium"> Save 8 min ⏱️</span>
+      </p>
+      <div className="flex gap-2 mt-2">
+        <button className="px-3 py-1 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700 transition">
+          Apply Route
+        </button>
+        <button className="px-3 py-1 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white text-xs rounded-lg hover:bg-gray-300 transition">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 
       {/* WEATHER ALERTS - FEATURE 40 */}
@@ -1847,6 +1917,58 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
   </div>
 </div>
 
+      {/* GAMIFICATION - WEEKLY CHALLENGES - EXTRA FEATURE 15 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-xl font-bold text-navy-800 dark:text-white">🏆 Weekly Challenges</h2>
+    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">New</span>
+  </div>
+  
+  <div className="space-y-3">
+    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/30 rounded-lg">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white text-lg">📦</div>
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">20 Deliveries</p>
+          <p className="text-xs text-gray-500">Complete 20 deliveries this week</p>
+        </div>
+      </div>
+      <div className="text-right">
+        <p className="text-sm font-bold text-blue-600">{orders?.filter(o => o.status === 'delivered').length || 0}/20</p>
+        <p className="text-xs text-gray-500">₹50 Bonus</p>
+      </div>
+    </div>
+    
+    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 rounded-lg">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white text-lg">⭐</div>
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">4.8+ Rating</p>
+          <p className="text-xs text-gray-500">Maintain 4.8+ rating this week</p>
+        </div>
+      </div>
+      <div className="text-right">
+        <p className="text-sm font-bold text-green-600">4.8/5.0</p>
+        <p className="text-xs text-gray-500">₹30 Bonus</p>
+      </div>
+    </div>
+    
+    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-900/30 rounded-lg">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white text-lg">⚡</div>
+        <div>
+          <p className="font-medium text-navy-800 dark:text-white">10 Express Orders</p>
+          <p className="text-xs text-gray-500">Deliver 10 orders within 30 min</p>
+        </div>
+      </div>
+      <div className="text-right">
+        <p className="text-sm font-bold text-orange-600">3/10</p>
+        <p className="text-xs text-gray-500">₹75 Bonus</p>
+      </div>
+    </div>
+  </div>
+</div>
+      
       {/* HEAT MAP - FEATURE 42 */}
 <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
   <div className="flex items-center justify-between mb-4">
@@ -2360,6 +2482,45 @@ function OrderCard({ order, onAccept, onDecline, onPickup, onDeliver, onUploadPr
           )}
         </div>
 
+              {/* INSTANT CUSTOMER SUPPORT CHAT - EXTRA FEATURE 13 */}
+<div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="font-medium text-navy-800 dark:text-white">💬 Chat with Customer</h3>
+    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">🟢 Online</span>
+  </div>
+  
+  <div className="bg-gray-50 dark:bg-navy-700 rounded-lg p-3 h-24 overflow-y-auto">
+    <div className="space-y-2">
+      <div className="flex justify-start">
+        <div className="bg-white dark:bg-navy-600 rounded-lg px-3 py-2 max-w-[80%] text-sm">
+          <p className="text-gray-700 dark:text-gray-300">Hi, I'm on my way! 5 min away.</p>
+          <span className="text-[10px] text-gray-400">10:30 AM</span>
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <div className="bg-teal-500 text-white rounded-lg px-3 py-2 max-w-[80%] text-sm">
+          <p className="text-white">Perfect! I'll be at the door.</p>
+          <span className="text-[10px] text-white/70">10:32 AM</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div className="flex gap-2 mt-2">
+    <input 
+      type="text" 
+      placeholder="Type a message..." 
+      className="flex-1 p-2 border border-gray-200 dark:border-navy-600 rounded-lg bg-white dark:bg-navy-700 text-sm"
+    />
+    <button className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition text-sm">
+      Send
+    </button>
+    <button className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg hover:bg-gray-300 transition text-sm">
+      📞
+    </button>
+  </div>
+</div>
+      
         {/* LIVE ORDER TRACKING - EXTRA FEATURE 1 */}
         <div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4 md:mt-0 md:border-t-0 md:pt-0">
           <div className="flex items-center justify-between mb-3">
@@ -2450,6 +2611,7 @@ function OrderCard({ order, onAccept, onDecline, onPickup, onDeliver, onUploadPr
           </button>
         </div>
       </div>
+
 
       {/* Proof Upload Modal */}
       {showProofUpload && (
