@@ -2068,14 +2068,14 @@ function OrdersView({
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredOrders = orders?.filter((order: any) => {
+  const filteredOrders = orders.filter((order: any) => {
     const matchesStatus = statusFilter === "all" || order.status === statusFilter;
     const matchesSearch =
       order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.vendorName?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
-  }) || [];
+  });
 
   const getStatusColor = (status: string) => {
     const colors: any = {
@@ -2125,11 +2125,11 @@ function OrdersView({
         </div>
       </div>
 
-      {/* QUICK FILTERS */}
+      {/* BULK ORDER VIEW - EXTRA FEATURE 4 */}
       <div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm mb-6">
         <div className="flex flex-wrap items-center gap-4">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quick Filters:</span>
-          <button
+          <button 
             onClick={() => setStatusFilter('assigned')}
             className={`px-3 py-1 text-xs rounded-full ${
               statusFilter === 'assigned' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
@@ -2137,7 +2137,7 @@ function OrdersView({
           >
             🆕 New
           </button>
-          <button
+          <button 
             onClick={() => setStatusFilter('accepted')}
             className={`px-3 py-1 text-xs rounded-full ${
               statusFilter === 'accepted' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
@@ -2145,7 +2145,7 @@ function OrdersView({
           >
             ✅ Accepted
           </button>
-          <button
+          <button 
             onClick={() => setStatusFilter('picked_up')}
             className={`px-3 py-1 text-xs rounded-full ${
               statusFilter === 'picked_up' ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
@@ -2153,7 +2153,7 @@ function OrdersView({
           >
             📦 Picked Up
           </button>
-          <button
+          <button 
             onClick={() => setStatusFilter('delivered')}
             className={`px-3 py-1 text-xs rounded-full ${
               statusFilter === 'delivered' ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
@@ -2161,7 +2161,7 @@ function OrdersView({
           >
             ✅ Completed
           </button>
-          <button
+          <button 
             onClick={() => setStatusFilter('all')}
             className={`px-3 py-1 text-xs rounded-full ${
               statusFilter === 'all' ? 'bg-gray-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
@@ -2169,13 +2169,13 @@ function OrdersView({
           >
             📋 All
           </button>
-
+          
           <span className="text-xs text-gray-500 ml-auto">
             {filteredOrders.length} orders
           </span>
         </div>
       </div>
-
+      
       {filteredOrders.length === 0 ? (
         <div className="text-center py-12">
           <Package className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
@@ -2188,6 +2188,7 @@ function OrdersView({
               key={order.id}
               order={order}
               onAccept={onAcceptOrder}
+              onDecline={onDeclineOrder}
               onPickup={onPickupOrder}
               onDeliver={onDeliverOrder}
               onUploadProof={onUploadProof}
@@ -2201,66 +2202,57 @@ function OrdersView({
   );
 }
 
-
-function OrderCard({ order, onAccept, onPickup, onDeliver, onUploadProof, onView, getStatusColor }: any) {
+function OrderCard({ order, onAccept, onDecline, onPickup, onDeliver, onUploadProof, onView, getStatusColor }: any) {
   const [showProofUpload, setShowProofUpload] = useState(false);
   const [proofFile, setProofFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files && e.target.files[0]) {
-    setProofFile(e.target.files[0]);
-  }
-};
+    if (e.target.files && e.target.files[0]) {
+      setProofFile(e.target.files[0]);
+    }
+  };
 
-const handleUpload = async () => {
-  if (proofFile) {
-    await onUploadProof(order.id, proofFile);
-    setProofFile(null);
-    setShowProofUpload(false);
-  }
-};
+  const handleUpload = async () => {
+    if (proofFile) {
+      await onUploadProof(order.id, proofFile);
+      setProofFile(null);
+      setShowProofUpload(false);
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm hover:shadow-lg transition">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex-1">
-          {/* Order header */}
-          <div className="flex items-center gap-3 mb-2">
+          {/* ORDER PRIORITY TAGS - EXTRA FEATURE 5 */}
+          <div className="flex items-center gap-2 flex-wrap mb-3">
             <span className="font-bold text-navy-800 dark:text-white">{order.orderNumber}</span>
             <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(order.status)}`}>
               {order.status.replace('_', ' ').toUpperCase()}
             </span>
+            
+            {/* Priority Tags */}
+            {order.totalAmount > 500 && (
+              <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full">
+                💎 VIP
+              </span>
+            )}
+            {order.distance < 2 && (
+              <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
+                ⚡ Express
+              </span>
+            )}
+            {order.customerNotes && (
+              <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">
+                📝 Note
+              </span>
+            )}
+            {order.paymentMode === 'COD' && (order.codAmount || order.totalAmount) > 300 && (
+              <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded-full">
+                💰 High COD
+              </span>
+            )}
           </div>
-
-          {/* ORDER PRIORITY TAGS - EXTRA FEATURE 5 */}
-<div className="flex items-center gap-2 flex-wrap">
-  <span className="font-bold text-navy-800 dark:text-white">{order.orderNumber}</span>
-  <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(order.status)}`}>
-    {order.status.replace('_', ' ').toUpperCase()}
-  </span>
-  
-  {/* Priority Tags */}
-  {order.totalAmount > 500 && (
-    <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full">
-      💎 VIP
-    </span>
-  )}
-  {order.distance < 2 && (
-    <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
-      ⚡ Express
-    </span>
-  )}
-  {order.customerNotes && (
-    <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">
-      📝 Note
-    </span>
-  )}
-  {order.paymentMode === 'COD' && (order.codAmount || order.totalAmount) > 300 && (
-    <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded-full">
-      💰 High COD
-    </span>
-  )}
-</div>
           
           {/* Order details grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
@@ -2277,7 +2269,7 @@ const handleUpload = async () => {
               <span className="font-medium">Product:</span> {order.productName} x{order.quantity}
             </p>
             <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Distance:</span> {order.distance.toFixed(1)} km
+              <span className="font-medium">Distance:</span> {order.distance?.toFixed(1)} km
             </p>
             <p className="text-gray-600 dark:text-gray-400">
               <span className="font-medium">Earning:</span> ₹{order.estimatedEarning || (order.distance * 6 + 12)}
@@ -2285,18 +2277,18 @@ const handleUpload = async () => {
           </div>
 
           {/* GPS LOCATION VERIFICATION - FEATURE 45 */}
-<div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4">
-  <div className="flex items-center justify-between">
-    <div className="flex items-center gap-2">
-      <MapPin className="w-5 h-5 text-teal-600" />
-      <span className="text-sm font-medium">Location Verified</span>
-    </div>
-    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">✅ Verified</span>
-  </div>
-  <p className="text-xs text-gray-500 mt-1">GPS location matches delivery address</p>
-</div>
+          <div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-teal-600" />
+                <span className="text-sm font-medium">Location Verified</span>
+              </div>
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">✅ Verified</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">GPS location matches delivery address</p>
+          </div>
           
-          {/* ✅ INSERT CUSTOMER NOTES HERE - RIGHT AFTER THE GRID */}
+          {/* ✅ CUSTOMER NOTES HERE */}
           {order.customerNotes && (
             <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <p className="text-sm text-yellow-800 dark:text-yellow-300 flex items-start gap-2">
@@ -2308,78 +2300,79 @@ const handleUpload = async () => {
         </div>
 
         {/* LIVE ORDER TRACKING - EXTRA FEATURE 1 */}
-<div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4">
-  <div className="flex items-center justify-between mb-3">
-    <h3 className="font-medium text-navy-800 dark:text-white">📍 Live Tracking</h3>
-    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full animate-pulse">🟢 Live</span>
-  </div>
-  
-  <div className="bg-gray-100 dark:bg-navy-700 rounded-lg p-4 h-32 flex items-center justify-center">
-    <div className="text-center">
-      <Navigation className="w-8 h-8 text-teal-600 mx-auto mb-2 animate-pulse" />
-      <p className="text-sm text-gray-500">Live location sharing</p>
-      <p className="text-xs text-gray-400">Customer can see your location</p>
-    </div>
-  </div>
-  
-  <div className="flex items-center gap-2 mt-2">
-    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-    <span className="text-xs text-green-600">Sharing live location</span>
-  </div>
-</div>
+        <div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4 md:mt-0 md:border-t-0 md:pt-0">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-medium text-navy-800 dark:text-white">📍 Live Tracking</h3>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full animate-pulse">🟢 Live</span>
+          </div>
+          
+          <div className="bg-gray-100 dark:bg-navy-700 rounded-lg p-4 h-32 flex items-center justify-center">
+            <div className="text-center">
+              <Navigation className="w-8 h-8 text-teal-600 mx-auto mb-2 animate-pulse" />
+              <p className="text-sm text-gray-500">Live location sharing</p>
+              <p className="text-xs text-gray-400">Customer can see your location</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2 mt-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-xs text-green-600">Sharing live location</span>
+          </div>
+        </div>
         
         {/* Action buttons */}
-<div className="flex flex-wrap gap-2">
-  {order.status === "assigned" && (
-    <>
-      <button
-        onClick={() => onAccept(order.id)}
-        className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
-      >
-        Accept
-      </button>
-      <button
-        onClick={() => {
-          const reason = prompt('Reason for declining this order?\n\n1. Too far\n2. Already busy\n3. Vehicle issue\n4. Other');
-          if (reason !== null) {
-            onDecline(order.id);
-            alert(`✅ Order declined. Reason: ${reason || 'Not specified'}`);
-          }
-        }}
-        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-      >
-        Decline
-      </button>
-    </>
-  )}
+        <div className="flex flex-wrap gap-2">
+          {order.status === "assigned" && (
+            <>
+              <button
+                onClick={() => onAccept(order.id)}
+                className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+              >
+                Accept
+              </button>
+              <button
+                onClick={() => {
+                  const reason = prompt('Reason for declining this order?\n\n1. Too far\n2. Already busy\n3. Vehicle issue\n4. Other');
+                  if (reason !== null) {
+                    onDecline(order.id);
+                    alert(`✅ Order declined. Reason: ${reason || 'Not specified'}`);
+                  }
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              >
+                Decline
+              </button>
+            </>
+          )}
 
-  {order.status === "accepted" && (
-    <button
-      onClick={() => onPickup(order.id)}
-      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-    >
-      Pickup
-    </button>
-  )}
+          {order.status === "accepted" && (
+            <button
+              onClick={() => onPickup(order.id)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Pickup
+            </button>
+          )}
 
-  {(order.status === "picked_up" || order.status === "out_for_delivery") && (
-    <button
-      onClick={() => setShowProofUpload(true)}
-      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-    >
-      Deliver
-    </button>
-  )}
+          {(order.status === "picked_up" || order.status === "out_for_delivery") && (
+            <button
+              onClick={() => setShowProofUpload(true)}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            >
+              Deliver
+            </button>
+          )}
 
-  <button
-    onClick={() => onView(order)}
-    className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-navy-600 transition"
-  >
-    View Details
-  </button>
-</div>
+          <button
+            onClick={() => onView(order)}
+            className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-navy-600 transition"
+          >
+            View Details
+          </button>
+        </div>
+      </div>
 
-              {/* Proof Upload Modal */}
+      {/* Proof Upload Modal */}
       {showProofUpload && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full">
@@ -2420,7 +2413,7 @@ const handleUpload = async () => {
       )}
     </div>
   );
-        }
+}
 
 // ============================================
 // 11. SHIFTS VIEW
