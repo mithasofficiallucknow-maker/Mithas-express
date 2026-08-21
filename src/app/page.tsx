@@ -2137,14 +2137,16 @@ function OrdersView({
     >
       🆕 New
     </button>
-    <button 
-      onClick={() => setStatusFilter('accepted')}
+        <button 
+      onClick={() => setStatusFilter('assigned')}
       className={`px-3 py-1 text-xs rounded-full ${
-        statusFilter === 'accepted' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+        statusFilter === 'assigned' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
       }`}
     >
-      ✅ Accepted
+    ✅ Accepted
     </button>
+    
+    
     <button 
       onClick={() => setStatusFilter('picked_up')}
       className={`px-3 py-1 text-xs rounded-full ${
@@ -2419,7 +2421,7 @@ const handleUpload = async () => {
       )}
     </div>
   );
-}
+        }
 
 // ============================================
 // 11. SHIFTS VIEW
