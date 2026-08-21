@@ -506,8 +506,27 @@ function Header({
               >
                 <span>Dark Mode</span>
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-
+                </button>
+                {/* BATTERY SAVER MODE - EXTRA FEATURE 8 */}
+<button
+  onClick={() => {
+    const isBatterySaver = localStorage.getItem('batterySaver') === 'true';
+    const newValue = !isBatterySaver;
+    localStorage.setItem('batterySaver', String(newValue));
+    
+    if (newValue) {
+      document.documentElement.style.filter = 'brightness(0.9) contrast(1.1)';
+      document.documentElement.style.transition = 'all 0.3s';
+      alert('🔋 Battery Saver Mode ON - Reduced brightness and animations');
+    } else {
+      document.documentElement.style.filter = 'none';
+      alert('🔋 Battery Saver Mode OFF');
+    }
+  }}
+  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+>
+  <Battery className="w-5 h-5 text-green-600" />
+</button>
               <button
                 onClick={() => setLanguage(language === "en" ? "hi" : "en")}
                 className="flex items-center justify-between px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700"
@@ -2363,6 +2382,24 @@ function OrderCard({ order, onAccept, onDecline, onPickup, onDeliver, onUploadPr
             </button>
           )}
 
+          {/* VOICE-ASSISTED ORDER READING - EXTRA FEATURE 6 */}
+<button
+  onClick={() => {
+    if ('speechSynthesis' in window) {
+      const text = `Order ${order.orderNumber}. Customer ${order.customerName}. Product ${order.productName}. Amount ₹${order.totalAmount}. Distance ${order.distance} kilometers.`;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.lang = 'en-IN';
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert('Voice assistant not supported in this browser.');
+    }
+  }}
+  className="px-3 py-2 text-xs bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+>
+  🔊 Listen
+</button>
           <button
             onClick={() => onView(order)}
             className="px-4 py-2 bg-gray-200 dark:bg-navy-700 text-navy-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-navy-600 transition"
@@ -2489,7 +2526,14 @@ function ShiftsView({ SHIFT_SLOTS, onBookShift, selectedShift, user }: any) {
 // ============================================
 
 function EarningsView({ earnings, orders, partner }: any) {
-  
+  // ============================================
+// SMART EARNING CALCULATOR - EXTRA FEATURE 7
+// ============================================
+
+const [extraDeliveries, setExtraDeliveries] = useState(5);
+const extraEarnings = extraDeliveries * 18;
+const currentEarnings = orders?.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (o.distance * 6 + 12), 0) || 0;
+const potentialTotal = currentEarnings + extraEarnings;
 {/* REWARDS & INCENTIVES - FEATURES 33-37 */}
 <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
   <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
@@ -2585,6 +2629,49 @@ function EarningsView({ earnings, orders, partner }: any) {
         </div>
       </div>
 
+      {/* SMART EARNING CALCULATOR - EXTRA FEATURE 7 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6 border-2 border-teal-200 dark:border-teal-800">
+  <div className="flex items-center gap-2 mb-4">
+    <span className="text-xl">💰</span>
+    <h2 className="text-lg font-semibold text-navy-800 dark:text-white">
+      Smart Earning Calculator
+    </h2>
+  </div>
+  
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="bg-gray-50 dark:bg-navy-700 rounded-xl p-4 text-center">
+      <p className="text-sm text-gray-500">Additional Deliveries</p>
+      <div className="flex items-center justify-center gap-2 mt-2">
+        <button 
+          onClick={() => setExtraDeliveries(Math.max(0, extraDeliveries - 1))}
+          className="px-3 py-1 bg-gray-200 dark:bg-navy-600 rounded-lg hover:bg-gray-300 transition"
+        >
+          -
+        </button>
+        <span className="w-12 text-center font-bold text-xl">{extraDeliveries}</span>
+        <button 
+          onClick={() => setExtraDeliveries(extraDeliveries + 1)}
+          className="px-3 py-1 bg-gray-200 dark:bg-navy-600 rounded-lg hover:bg-gray-300 transition"
+        >
+          +
+        </button>
+      </div>
+    </div>
+    
+    <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-900/30 rounded-xl p-4 text-center">
+      <p className="text-sm text-gray-500">Extra Earnings</p>
+      <p className="text-2xl font-bold text-teal-600">₹{extraEarnings}</p>
+      <p className="text-xs text-gray-500">₹12/order + ₹6/km</p>
+    </div>
+    
+    <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 rounded-xl p-4 text-center">
+      <p className="text-sm text-gray-500">Potential Weekly Total</p>
+      <p className="text-2xl font-bold text-purple-600">₹{potentialTotal}</p>
+      <p className="text-xs text-gray-500">+ ₹{extraEarnings} extra</p>
+    </div>
+  </div>
+</div>
+      
       {/* Registration Fee Status */}
       <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">Onboarding Fee Status</h2>
