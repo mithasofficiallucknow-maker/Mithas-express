@@ -2050,7 +2050,6 @@ function QuickAction({ icon, label, onClick, color }: any) {
   );
 }
 
-                        
 // ============================================
 // 10. ORDERS VIEW
 // ============================================
@@ -2069,13 +2068,14 @@ function OrdersView({
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredOrders = orders.filter((order: Order) => {
+  const filteredOrders = orders?.filter((order: any) => {
     const matchesStatus = statusFilter === "all" || order.status === statusFilter;
-    const matchesSearch = order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.vendorName?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
-  });
+  }) || [];
 
   const getStatusColor = (status: string) => {
     const colors: any = {
@@ -2125,59 +2125,57 @@ function OrdersView({
         </div>
       </div>
 
-      {/* BULK ORDER VIEW - EXTRA FEATURE 4 */}
-<div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm mb-6">
-  <div className="flex flex-wrap items-center gap-4">
-    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quick Filters:</span>
-    <button 
-      onClick={() => setStatusFilter('assigned')}
-      className={`px-3 py-1 text-xs rounded-full ${
-        statusFilter === 'assigned' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
-      }`}
-    >
-      🆕 New
-    </button>
-        <button 
-      onClick={() => setStatusFilter('assigned')}
-      className={`px-3 py-1 text-xs rounded-full ${
-        statusFilter === 'assigned' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
-      }`}
-    >
-    ✅ Accepted
-    </button>
-    
-    
-    <button 
-      onClick={() => setStatusFilter('picked_up')}
-      className={`px-3 py-1 text-xs rounded-full ${
-        statusFilter === 'picked_up' ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
-      }`}
-    >
-      📦 Picked Up
-    </button>
-    <button 
-      onClick={() => setStatusFilter('delivered')}
-      className={`px-3 py-1 text-xs rounded-full ${
-        statusFilter === 'delivered' ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
-      }`}
-    >
-      ✅ Completed
-    </button>
-    <button 
-      onClick={() => setStatusFilter('all')}
-      className={`px-3 py-1 text-xs rounded-full ${
-        statusFilter === 'all' ? 'bg-gray-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
-      }`}
-    >
-      📋 All
-    </button>
-    
-    <span className="text-xs text-gray-500 ml-auto">
-      {filteredOrders.length} orders
-    </span>
-  </div>
-</div>
-      
+      {/* QUICK FILTERS */}
+      <div className="bg-white dark:bg-navy-800 rounded-2xl p-4 shadow-sm mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quick Filters:</span>
+          <button
+            onClick={() => setStatusFilter('assigned')}
+            className={`px-3 py-1 text-xs rounded-full ${
+              statusFilter === 'assigned' ? 'bg-teal-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+            }`}
+          >
+            🆕 New
+          </button>
+          <button
+            onClick={() => setStatusFilter('accepted')}
+            className={`px-3 py-1 text-xs rounded-full ${
+              statusFilter === 'accepted' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+            }`}
+          >
+            ✅ Accepted
+          </button>
+          <button
+            onClick={() => setStatusFilter('picked_up')}
+            className={`px-3 py-1 text-xs rounded-full ${
+              statusFilter === 'picked_up' ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+            }`}
+          >
+            📦 Picked Up
+          </button>
+          <button
+            onClick={() => setStatusFilter('delivered')}
+            className={`px-3 py-1 text-xs rounded-full ${
+              statusFilter === 'delivered' ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+            }`}
+          >
+            ✅ Completed
+          </button>
+          <button
+            onClick={() => setStatusFilter('all')}
+            className={`px-3 py-1 text-xs rounded-full ${
+              statusFilter === 'all' ? 'bg-gray-600 text-white' : 'bg-gray-200 dark:bg-navy-700'
+            }`}
+          >
+            📋 All
+          </button>
+
+          <span className="text-xs text-gray-500 ml-auto">
+            {filteredOrders.length} orders
+          </span>
+        </div>
+      </div>
+
       {filteredOrders.length === 0 ? (
         <div className="text-center py-12">
           <Package className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
@@ -2185,7 +2183,7 @@ function OrdersView({
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredOrders.map((order: Order) => (
+          {filteredOrders.map((order: any) => (
             <OrderCard
               key={order.id}
               order={order}
@@ -2202,6 +2200,7 @@ function OrdersView({
     </div>
   );
 }
+
 
 function OrderCard({ order, onAccept, onPickup, onDeliver, onUploadProof, onView, getStatusColor }: any) {
   const [showProofUpload, setShowProofUpload] = useState(false);
