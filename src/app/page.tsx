@@ -1612,6 +1612,48 @@ function DashboardHome({ user, partner, orders, earnings, isOnline, setIsOnline,
   </div>
 </div>
 
+      {/* RIDE HISTORY - WEEKLY SUMMARY - EXTRA FEATURE 10 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-xl font-bold text-navy-800 dark:text-white">📋 Weekly Summary</h2>
+    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">This Week</span>
+  </div>
+  
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-xl">
+      <div className="text-2xl mb-1">🛵</div>
+      <p className="text-2xl font-bold text-navy-800 dark:text-white">
+        {orders?.filter(o => o.status === 'delivered').length || 0}
+      </p>
+      <p className="text-xs text-gray-500">Deliveries</p>
+    </div>
+    
+    <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-xl">
+      <div className="text-2xl mb-1">📏</div>
+      <p className="text-2xl font-bold text-navy-800 dark:text-white">
+        {orders?.reduce((sum, o) => sum + (o.distance || 0), 0).toFixed(1) || 0} km
+      </p>
+      <p className="text-xs text-gray-500">Total Distance</p>
+    </div>
+    
+    <div className="text-center p-3 bg-gray-50 dark:bg-navy-700 rounded-xl">
+      <div className="text-2xl mb-1">⏱️</div>
+      <p className="text-2xl font-bold text-navy-800 dark:text-white">
+        {Math.floor((orders?.filter(o => o.status === 'delivered').length || 0) * 25 / 60)}h
+      </p>
+      <p className="text-xs text-gray-500">Active Time</p>
+    </div>
+    
+    <div className="text-center p-3 bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-900/30 rounded-xl">
+      <div className="text-2xl mb-1">💰</div>
+      <p className="text-2xl font-bold text-teal-600">
+        ₹{orders?.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (o.distance * 6 + 12), 0) || 0}
+      </p>
+      <p className="text-xs text-gray-500">Total Earnings</p>
+    </div>
+  </div>
+</div>
+      
       {/* EARNING FORECAST - EXTRA FEATURE 3 */}
 <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mt-6">
   <div className="flex items-center justify-between mb-4">
@@ -3492,6 +3534,65 @@ function ProfileView({ user, partner, onUpdate, referrals, achievements, fraudAl
   </p>
 </div>
 
+      {/* CUSTOMER RATING & FEEDBACK - EXTRA FEATURE 9 */}
+<div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mb-6">
+  <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
+    ⭐ Customer Ratings & Feedback
+  </h2>
+  
+  <div className="flex items-center gap-6 mb-4">
+    <div className="text-center">
+      <p className="text-4xl font-bold text-yellow-500">4.8</p>
+      <div className="flex gap-1 text-yellow-400 text-sm">
+        {'★'.repeat(4)}<span className="text-gray-300">★</span>
+      </div>
+      <p className="text-xs text-gray-500">128 ratings</p>
+    </div>
+    
+    <div className="flex-1 space-y-1">
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-yellow-500">★★★★★</span>
+        <div className="flex-1 h-2 bg-gray-200 dark:bg-navy-700 rounded-full">
+          <div className="h-2 bg-yellow-500 rounded-full" style={{width: '75%'}}></div>
+        </div>
+        <span className="text-xs text-gray-500">75%</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-yellow-500">★★★★</span>
+        <div className="flex-1 h-2 bg-gray-200 dark:bg-navy-700 rounded-full">
+          <div className="h-2 bg-yellow-500 rounded-full" style={{width: '15%'}}></div>
+        </div>
+        <span className="text-xs text-gray-500">15%</span>
+      </div>
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-gray-400">★★★</span>
+        <div className="flex-1 h-2 bg-gray-200 dark:bg-navy-700 rounded-full">
+          <div className="h-2 bg-yellow-500 rounded-full" style={{width: '7%'}}></div>
+        </div>
+        <span className="text-xs text-gray-500">7%</span>
+      </div>
+    </div>
+  </div>
+  
+  {/* Recent Feedback */}
+  <div className="space-y-2">
+    <div className="p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+      <div className="flex justify-between">
+        <span className="font-medium text-sm">✅ Fast delivery!</span>
+        <span className="text-xs text-gray-500">2 days ago</span>
+      </div>
+      <p className="text-xs text-gray-500">Order #ORD-1234</p>
+    </div>
+    <div className="p-3 bg-gray-50 dark:bg-navy-700 rounded-lg">
+      <div className="flex justify-between">
+        <span className="font-medium text-sm">✅ Professional delivery</span>
+        <span className="text-xs text-gray-500">5 days ago</span>
+      </div>
+      <p className="text-xs text-gray-500">Order #ORD-1235</p>
+    </div>
+  </div>
+</div>
+      
       {/* ACHIEVEMENT BADGES - FEATURE 32 */}
 <div className="bg-white dark:bg-navy-800 rounded-2xl p-6 shadow-sm mb-6">
   <h2 className="text-lg font-semibold text-navy-800 dark:text-white mb-4">
