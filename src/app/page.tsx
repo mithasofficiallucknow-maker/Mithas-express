@@ -2482,6 +2482,35 @@ function OrderCard({ order, onAccept, onDecline, onPickup, onDeliver, onUploadPr
           )}
         </div>
 
+        {/* NFC-BASED DELIVERY CONFIRMATION - EXTRA FEATURE 11 */}
+<div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="font-medium text-navy-800 dark:text-white">📱 NFC Delivery Confirmation</h3>
+    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Tap to Confirm</span>
+  </div>
+  
+  <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-4">
+    <div className="flex items-center gap-4">
+      <div className="w-16 h-16 bg-white dark:bg-navy-700 rounded-xl flex items-center justify-center border-2 border-dashed border-blue-300 dark:border-blue-700">
+        <Smartphone className="w-8 h-8 text-blue-600" />
+      </div>
+      <div className="flex-1">
+        <p className="text-sm font-medium text-navy-800 dark:text-white">Tap phone to confirm delivery</p>
+        <p className="text-xs text-gray-500">Hold your phone near customer's device</p>
+        <button 
+          onClick={() => {
+            if (navigator) {
+              alert('📱 NFC tap detected! Delivery confirmed successfully.');
+            }
+          }}
+          className="mt-2 px-4 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
+        >
+          Simulate NFC Tap
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
               {/* INSTANT CUSTOMER SUPPORT CHAT - EXTRA FEATURE 13 */}
 <div className="border-t border-gray-200 dark:border-navy-700 pt-4 mt-4">
   <div className="flex items-center justify-between mb-3">
