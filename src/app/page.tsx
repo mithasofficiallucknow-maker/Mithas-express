@@ -422,6 +422,11 @@ function Header({
         Join Now
       </button>
 
+    </>
+  )}
+</div>
+
+          
       {/* SUPPORT BUTTON - Ab Fragment ke andar sahi jagah par hai */}
       <button
         onClick={() => {
@@ -469,10 +474,8 @@ function Header({
       >
         <Headphones className="w-5 h-5 text-gray-600 dark:text-gray-400" />
       </button>
-    </>
-  )}
-</div>
-
+          </div>
+        
           {/* SOS FAMILY ALERT - FEATURE 43 */}
 <button
   onClick={() => {
