@@ -403,7 +403,7 @@ function Header({
           </p>
         </div>
         <button
-          onClick={onLogout}
+                onClick={onLogout}
           className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
         >
           Logout
@@ -418,13 +418,14 @@ function Header({
       >
         Login
       </button>
-      <button className="px-4 py-2 text-sm font-medium bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition">
+      <button
+        onClick={onOpenLogin}
+        className="px-4 py-2 text-sm font-medium bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
+      >
         Join Now
       </button>
-
     </>
   )}
-</div>
 
           
       {/* SUPPORT BUTTON - Ab Fragment ke andar sahi jagah par hai */}
@@ -453,28 +454,29 @@ function Header({
                   <button class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 transition w-full text-left">
                     <span class="text-xl">💬</span>
                     <div>
-                      <p class="font-medium text-navy-800 dark:text-white">Live Chat</p>
-                      <p class="text-xs text-gray-500">Chat with support</p>
-                    </div>
-                  </button>
-                  <button class="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 transition w-full text-left">
-                    <span class="text-xl">⚠️</span>
-                    <div>
-                      <p class="font-medium text-red-800 dark:text-red-300">SOS Emergency</p>
-                      <p class="text-xs text-red-600 dark:text-red-400">Immediate help</p>
-                    </div>
-                  </button>
-                </div>
+                         <button class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 transition w-full text-left">
+              <span class="text-xl">💬</span>
+              <div>
+                <p class="font-medium text-navy-800 dark:text-white">Live Chat</p>
+                <p class="text-xs text-gray-500">Chat with support</p>
               </div>
-            </div>
-          `;
-          document.body.appendChild(supportModal);
-        }}
-        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
-      >
-        <Headphones className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-      </button>
+            </button>
+            <button class="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 transition w-full text-left">
+              <span class="text-xl">⚠️</span>
+              <div>
+                <p class="font-medium text-red-800 dark:text-red-300">SOS Emergency</p>
+                <p class="text-xs text-red-600 dark:text-red-400">Immediate help</p>
+              </div>
+            </button>
           </div>
+        </div>
+      `;
+      document.body.appendChild(supportModal);
+    }}
+    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-700 transition"
+  >
+    <Headphones className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+  </button>
         
           {/* SOS FAMILY ALERT - FEATURE 43 */}
 <button
