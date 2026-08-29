@@ -403,7 +403,7 @@ function Header({
           </p>
         </div>
         <button
-                onClick={onLogout}
+          onClick={onLogout}
           className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
         >
           Logout
@@ -427,34 +427,30 @@ function Header({
     </>
   )}
 
-          
-      {/* SUPPORT BUTTON - Ab Fragment ke andar sahi jagah par hai */}
-      <button
-        onClick={() => {
-          const supportModal = document.createElement('div');
-          supportModal.innerHTML = `
-            <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div class="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full animate-scaleIn">
-                <div class="flex justify-between items-center mb-4">
-                  <h2 class="text-xl font-bold text-navy-800 dark:text-white">📞 Support</h2>
-                  <button onclick="this.closest('.fixed').remove()" class="p-2 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-                <div class="space-y-3">
-                  <a href="tel:+919999999999" class="flex items-center gap-3 p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg hover:bg-teal-100 transition">
-                    <span class="text-xl">📞</span>
-                    <div>
-                      <p class="font-medium text-navy-800 dark:text-white">Call Support</p>
-                      <p class="text-xs text-gray-500">24/7 helpline</p>
-                    </div>
-                  </a>
-                  <button class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 transition w-full text-left">
-                    <span class="text-xl">💬</span>
-                    <div>
-                         <button class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 transition w-full text-left">
+  {/* SUPPORT BUTTON */}
+  <button
+    onClick={() => {
+      const supportModal = document.createElement('div');
+      supportModal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm";
+      supportModal.innerHTML = `
+        <div class="bg-white dark:bg-navy-800 rounded-2xl p-6 max-w-md w-full animate-scaleIn">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-navy-800 dark:text-white">📞 Support</h2>
+            <button onclick="this.closest('.fixed').remove()" class="p-2 hover:bg-gray-100 rounded-lg">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="space-y-3">
+            <a href="tel:+919999999999" class="flex items-center gap-3 p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg hover:bg-teal-100 transition">
+              <span class="text-xl">📞</span>
+              <div>
+                <p class="font-medium text-navy-800 dark:text-white">Call Support</p>
+                <p class="text-xs text-gray-500">24/7 helpline</p>
+              </div>
+            </a>
+            <button class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 transition w-full text-left">
               <span class="text-xl">💬</span>
               <div>
                 <p class="font-medium text-navy-800 dark:text-white">Live Chat</p>
@@ -477,6 +473,8 @@ function Header({
   >
     <Headphones className="w-5 h-5 text-gray-600 dark:text-gray-400" />
   </button>
+
+        
         
           {/* SOS FAMILY ALERT - FEATURE 43 */}
 <button
