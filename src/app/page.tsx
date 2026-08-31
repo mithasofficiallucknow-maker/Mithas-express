@@ -427,7 +427,7 @@ function Header({
     </>
   )}
 
-  {/* SUPPORT BUTTON */}
+    {/* SUPPORT BUTTON */}
   <button
     onClick={() => {
       const supportModal = document.createElement('div');
@@ -473,7 +473,7 @@ function Header({
   >
     <Headphones className="w-5 h-5 text-gray-600 dark:text-gray-400" />
   </button>
-
+  
         
         
           {/* SOS FAMILY ALERT - FEATURE 43 */}
