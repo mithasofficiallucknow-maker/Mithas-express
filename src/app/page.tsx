@@ -81,6 +81,8 @@ import {
   Building,
   Banknote,
   IndianRupee,
+  Battery,        
+  Calculator,   
 } from "lucide-react";
 
 // ============================================
