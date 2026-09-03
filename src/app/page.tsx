@@ -1391,14 +1391,14 @@ return (
   );
 
 // ============================================
-// 6. HERO SECTION
+// 6. HERO SECTION - FIXED SIZE
 // ============================================
 
 function HeroSection({ banners, currentSlide, setCurrentSlide, onOpenLogin }: any) {
   return (
     <section className="relative overflow-hidden">
-      {/* Banner height kam ki - mobile pe 250px, tablet pe 350px, desktop pe 450px */}
-      <div className="relative h-[250px] md:h-[350px] lg:h-[450px]">
+      {/* Banner height bahut chhoti - mobile pe 180px, tablet pe 250px, desktop pe 320px */}
+      <div className="relative h-[180px] md:h-[250px] lg:h-[320px]">
         {banners.map((banner: string, index: number) => (
           <div
             key={index}
@@ -1416,57 +1416,57 @@ function HeroSection({ banners, currentSlide, setCurrentSlide, onOpenLogin }: an
           </div>
         ))}
 
-        {/* Gradient Overlay - halka karo taaki buttons dikhein */}
-        <div className="absolute inset-0 bg-gradient-to-t from-navy-900/30 via-transparent to-transparent" />
+        {/* Halka gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
-        {/* Slide Indicators - thoda upar karo */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {/* Slide Indicators - neeche */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {banners.map((_: string, index: number) => (
             <button
               key={index}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentSlide ? "w-6 bg-white" : "bg-white/50"
+              className={`w-1.5 h-1.5 rounded-full transition-all ${
+                index === currentSlide ? "w-4 bg-white" : "bg-white/50"
               }`}
               onClick={() => setCurrentSlide(index)}
             />
           ))}
         </div>
 
-        {/* Navigation Arrows - chhote karo */}
-        <button
-          onClick={() => setCurrentSlide((prev: number) => (prev - 1 + banners.length) % banners.length)}
-          className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 transition z-10"
-        >
-          <ChevronLeft className="w-4 h-4 text-white" />
-        </button>
-        <button
-          onClick={() => setCurrentSlide((prev: number) => (prev + 1) % banners.length)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 transition z-10"
-        >
-          <ChevronRight className="w-4 h-4 text-white" />
-        </button>
-
-        {/* CTA Overlay - text chhota karo aur neeche karo */}
-        <div className="absolute inset-0 flex items-end justify-center pb-10 z-10">
-          <div className="text-center text-white max-w-2xl px-4">
-            <h1 className="text-2xl md:text-4xl font-bold mb-2 drop-shadow-lg">
+        {/* CTA Overlay - bilkul neeche aur chhota */}
+        <div className="absolute inset-x-0 bottom-0 z-10">
+          <div className="text-center text-white px-4 pb-3">
+            <h1 className="text-lg md:text-2xl font-bold drop-shadow-lg">
               Drive with Mithaas Express
             </h1>
-            <p className="text-sm md:text-lg mb-4 text-white/90 drop-shadow">
-              Earn ₹12/order + ₹6/km • Weekly Payouts • Flexible Hours
+            <p className="text-xs md:text-sm text-white/90 drop-shadow mb-2">
+              Earn ₹12/order + ₹6/km • Weekly Payouts
             </p>
             <button
               onClick={onOpenLogin}
-              className="px-6 py-2.5 bg-teal-600 text-white rounded-full font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-xl text-sm"
+              className="px-4 py-1.5 bg-teal-600 text-white rounded-full font-semibold hover:bg-teal-700 transition shadow-lg text-xs md:text-sm"
             >
               Start Earning Today
             </button>
           </div>
         </div>
+
+        {/* Navigation Arrows - chhote aur kinare */}
+        <button
+          onClick={() => setCurrentSlide((prev: number) => (prev - 1 + banners.length) % banners.length)}
+          className="absolute left-1 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-sm rounded-full hover:bg-black/40 transition z-10"
+        >
+          <ChevronLeft className="w-3 h-3 text-white" />
+        </button>
+        <button
+          onClick={() => setCurrentSlide((prev: number) => (prev + 1) % banners.length)}
+          className="absolute right-1 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-sm rounded-full hover:bg-black/40 transition z-10"
+        >
+          <ChevronRight className="w-3 h-3 text-white" />
+        </button>
       </div>
     </section>
   );
-}
+                                                            }
   
 // ============================================
 // 7. BENEFITS SECTION
